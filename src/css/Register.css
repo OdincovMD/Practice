@@ -1,0 +1,39 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;1,300&display=swap");
+
+.register {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* высота на всю страницу */
+    flex-direction: column;
+}
+
+.register form input,
+.register form button {
+    position: relative;
+    left: 8px;
+    width: 90%;
+    padding: 15px 5%;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    margin-bottom: 10px;
+    border: 0;
+    background: #222;
+    color: #fff;
+    outline: none;
+    font-size: 20px;
+    box-sizing: border-box;
+}
+
+.register form p {
+    position: relative;
+    left: 8px;
+}
+
+.register form button {
+    transition: transform 500ms ease;
+}
+
+.register form button:hover {
+    transform: scale(1.03);
+}
