@@ -4,12 +4,13 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh; /* высота на всю страницу */
+    height: 100vh;
     flex-direction: column;
 }
 
 .register form input,
 .register form button {
+    translate: 5px;
     position: relative;
     left: 8px;
     width: 90%;
@@ -21,8 +22,21 @@
     background: #222;
     color: #fff;
     outline: none;
+    outline-color: #222;
     font-size: 20px;
     box-sizing: border-box;
+    transition: transform 500ms ease, outline-color 300ms ease-in-out;
+}
+
+.register form button:hover {
+    transform: scale(1.03);
+}
+
+.register form input:focus,
+.register form button:focus {
+    outline-color: rgb(72, 203, 255);
+    outline-style: solid;
+    outline-width: 1px;
 }
 
 .register form p {
@@ -30,10 +44,6 @@
     left: 8px;
 }
 
-.register form button {
-    transition: transform 500ms ease;
-}
-
-.register form button:hover {
-    transform: scale(1.03);
+.register form .top {
+    margin-top: 5px;
 }

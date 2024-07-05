@@ -14,6 +14,7 @@ class Login extends React.Component {
         return (
             <form ref={(el) => this.myForm = el}>
                 <input
+                    className = "top"
                     placeholder="Логин"
                     onChange={(ans) => { this.setState({ login: ans.target.value }) }}
                 />

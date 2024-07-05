@@ -17,6 +17,7 @@ class Register extends React.Component {
         return (
             <form ref={(el) => this.myForm = el}>
                 <input
+                    className="top"
                     placeholder="Фамилия"
                     onChange={(ans) => { this.setState({ lastName: ans.target.value }) }}
                 />
