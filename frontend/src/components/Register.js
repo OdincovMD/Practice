@@ -1,12 +1,15 @@
 import React from "react"
 
-class Login extends React.Component {
+class Register extends React.Component {
 
     constructor(props) {
         super(props)
         this.state = {
+            lastName: "",
+            firstName: "",
             login: "",
-            password: ""
+            password: "",
+            rep_password: "",
         }
     }
 
@@ -14,7 +17,15 @@ class Login extends React.Component {
         return (
             <form ref={(el) => this.myForm = el}>
                 <input
-                    className = "top"
+                    className="top"
+                    placeholder="Фамилия"
+                    onChange={(ans) => { this.setState({ lastName: ans.target.value }) }}
+                />
+                <input
+                    placeholder="Имя"
+                    onChange={(ans) => { this.setState({ firstName: ans.target.value }) }}
+                />
+                <input
                     placeholder="Логин"
                     onChange={(ans) => { this.setState({ login: ans.target.value }) }}
                 />
@@ -23,19 +34,24 @@ class Login extends React.Component {
                     placeholder="Пароль"
                     onChange={(ans) => { this.setState({ password: ans.target.value }) }}
                 />
+                <input
+                    type="password"
+                    placeholder="Подтвердите пароль"
+                    onChange={(ans) => { this.setState({ password: ans.target.value }) }}
+                />
                 <br />
                 <button
                     type="button"
                     onClick={() => {
                         this.myForm.reset()
-                        this.onLogin(this.state)
+                        this.onRegister(this.state)
                     }
                     }>
-                    Войти
+                    Регистрация
                 </button>
                 <br /><br />
                 <p>
-                    Ещё не зарегестрированы?&nbsp;
+                    Уже зарегестрированы?&nbsp;
                 </p>
                 <button
                     className="link"
@@ -43,14 +59,14 @@ class Login extends React.Component {
                     onClick={() => {
                         this.myForm.reset()
                         this.setState({ login: "", password: "" })
-                        this.props.onChange("register")
+                        this.props.onChange("login")
                     }
                     }>
-                    Регистрация
+                    Войти
                 </button>
             </form>
         )
     }
 }
 
-export default Login
+export default Register
