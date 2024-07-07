@@ -2,6 +2,7 @@ import React from "react"
 import Header from "./components/Header"
 import Login from "./components/Login"
 import Register from "./components/Register"
+import Card from "./components/card"
 
 class App extends React.Component {
 
@@ -38,6 +39,17 @@ class App extends React.Component {
                     </main>
 
                 </div>)
+
+        else if (this.state.window === "card")
+            return (
+                <div className="card">
+                    <Header title="Профиль" />
+                    <main>
+                        <Card onChange={this.changeState} />
+                    </main>
+
+                </div>
+            )
     }
 
     changeState(state) {
