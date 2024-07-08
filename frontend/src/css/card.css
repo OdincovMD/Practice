@@ -1,41 +1,47 @@
-.profile-page {
-  max-width: 600px;
+.card {
+  max-width: 1000px;
   margin: 40px auto;
   padding: 20px;
   background-color: #f9f9f9;
   border: 1px solid #ddd;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh; /* высота на всю страницу */
+  flex-direction: column;
 }
 
-.profile-page h1 {
+.card h1 {
   margin-top: 0;
   font-weight: bold;
   color: #333;
 }
 
-.profile-page p {
+.card p {
   margin-bottom: 10px;
 }
 
-.profile-page.loading {
+.card .loading {
   text-align: center;
   font-size: 18px;
   color: #666;
 }
 
-.profile-page.user-data {
+.card .user-data {
   margin-top: 20px;
 }
 
-.profile-page.user-data p {
+.card .user-data p {
   margin-bottom: 10px;
 }
 
-.profile-page.user-data p span {
+.card .user-data p span {
   font-weight: bold;
 }
 
-.profile-page button {
+.card button {
+  width: 100%;
   background-color: #4CAF50;
   color: #fff;
   border: none;
@@ -45,6 +51,6 @@
   margin-top: 20px;
 }
 
-.profile-page button:hover {
+.card button:hover {
   background-color: #3e8e41;
 }

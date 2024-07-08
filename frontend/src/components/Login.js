@@ -63,30 +63,30 @@ class Login extends React.Component {
     }
 
     onLogin(loginData) {
-        fetch("some/url", {
-            method: "post",
-            headers: {
-                "type": "login"
-            },
-            body: JSON.stringify(loginData)
-        })
-            .then(res => res.json())
-            .then(
-                (result) => {
-                    this.setState({
-                        status: result.status
-                    })
-                },
+        // fetch("some/url", {
+        //     method: "post",
+        //     headers: {
+        //         "type": "login"
+        //     },
+        //     body: JSON.stringify(loginData)
+        // })
+        //     .then(response => response.json())
+        //     .then(
+        //         (response_json) => {
+        //             if (response_json.ok)
+        //                 this.setState({
+        //                     status: response_json.isValid
+        //                 })
+        //             else
+        //                 this.setState({
+        //                     error: response_json.status
+        //                 })
 
-                (error) => {
-                    this.setState({
-                        error
-                    })
-                }
-            )
+        //         }
+        //     )
 
-        if (this.state.status === "ok")
-            this.props.onChange("card")
+        // // if (this.state.status === "ok")
+        this.props.onChange("card")
     }
 }
 

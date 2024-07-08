@@ -14,13 +14,6 @@ body {
     font-weight: 300;
 }
 
-header {
-    position: relative;
-    left: -14px;
-    font-size: 50px;
-    font-weight: 600;
-}
-
 main {
     margin: 50px 100px;
     width: 30%;
