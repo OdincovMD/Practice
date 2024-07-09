@@ -12,7 +12,7 @@ app = FastAPI(
 )
 
 class Settings():
-    # empty
+    pass
 
 
 # In-memory database (for demonstration purposes)
@@ -31,10 +31,11 @@ async def GeneralPostReq(op_type: type, json_body = Body()) -> JSONResponse:
         # login
         # password
         # request to db
+        pass
     elif op_type.id == "register":
-
+        pass
     elif op_type.id == "image":
-        
+        pass
     else:
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST)
