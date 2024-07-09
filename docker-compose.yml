@@ -1,0 +1,12 @@
+version: "2"
+services:
+  frontend:
+    image: frontend
+    ports:
+    - 3000:3000
+    depends_on:
+      - backend
+  backend:
+    image: backend
+    ports:
+    - 80

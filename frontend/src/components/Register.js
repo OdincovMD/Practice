@@ -1,4 +1,5 @@
 import React from "react"
+import BACKEND_URL from "../config"
 
 class Register extends React.Component {
 
