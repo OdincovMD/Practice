@@ -27,6 +27,6 @@ target_link_libraries(main PRIVATE Threads::Threads)
 target_link_libraries(main PRIVATE microhttpd)
 
 # add httpserver library
-target_link_libraries(main PRIVATE ${LIBHTTPSERVER_PATH}/lib/libhttpserver.so)
-target_include_directories(main PRIVATE ${LIBHTTPSERVER_PATH}/include/)
+# target_link_libraries(main PRIVATE ${LIBHTTPSERVER_PATH}/lib/libhttpserver.so)
+# target_include_directories(main PRIVATE ${LIBHTTPSERVER_PATH}/include/)
 
