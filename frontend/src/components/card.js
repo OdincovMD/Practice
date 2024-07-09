@@ -1,13 +1,14 @@
 import React from 'react'
+import BACKEND_URL from "../config"
 
 class Card extends React.Component {
 
   constructor(props) {
     super(props)
     this.state = {
-      name: 'Alex',
-      surname: 'Grimaldo',
-      status: 'admin',
+      name: this.props.userData.name,
+      surname: this.props.userData.surname,
+      // status: 'admin',
       loading: false
     }
   }
@@ -27,14 +28,14 @@ class Card extends React.Component {
             <h1 style={{ marginBottom: 20 }}> Страница пользователя</h1>
             <p>Имя: {this.state.name}</p>
             <p>Фамилия: {this.state.surname}</p>
-            <p style={{ marginBottom: 20 }}>Статус: {this.state.status === 'admin' ? 'Администратор' : 'Врач'}</p>
+            {/* <p style={{ marginBottom: 20 }}>Статус: {this.state.status === 'admin' ? 'Администратор' : 'Врач'}</p> */}
             <div style={{ textAlign: 'center' }}>
-              <button style={{ display: 'block', marginBottom: 10 }} onClick={() => {this.props.onChange("editProfile")}}>Изменить данные о пользователе</button>
-              <button style={{ display: 'block' }} onClick={() => {this.props.onChange("login")}}>Выйти из профиля</button>
+              <button style={{ display: 'block', marginBottom: 10 }} onClick={() => { this.props.onChange("editProfile") }}>Изменить данные о пользователе</button>
+              <button style={{ display: 'block' }} onClick={() => { this.props.onChange("login") }}>Выйти из профиля</button>
             </div>
             <div style={{ textAlign: 'center', marginTop: 20 }}>
               <h2 style={{ marginBottom: 10 }}>Панель управления</h2>
-              <button style={{ display: 'block' }} onClick={this.handleUploadImage}>Загрузить изображение с ПК</button>
+              <button style={{ display: 'block' }} onClick={() => { this.handleUploadImage() }}>Загрузить изображение с ПК</button>
             </div>
           </div>
         </div>

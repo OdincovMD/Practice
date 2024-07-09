@@ -1,6 +1,3 @@
-backend/build/*
-backend/src/check_request.cpp
-
 # dependencies
 /node_modules
 /package-lock.json
@@ -12,6 +9,8 @@ backend/src/check_request.cpp
 
 # production
 frontend/build/*
+backend/build/*
+backend/src/check_request.cpp
 
 # misc
 .DS_Store

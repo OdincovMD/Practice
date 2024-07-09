@@ -11,7 +11,9 @@ app = FastAPI(
     # title=settings.PROJECT_NAME, version=settings.PROJECT_VERSION, debug=settings.DEBUG
 )
 
+
 class Settings():
+    # empty
     pass
 
 
@@ -19,12 +21,16 @@ class Settings():
 items = []
 
 # Pydantic model for item data
+
+
 class type(BaseModel):
     id: str
 
 # Create an item
+
+
 @app.post("/")
-async def GeneralPostReq(op_type: type, json_body = Body()) -> JSONResponse:
+async def GeneralPostReq(op_type: type, json_body=Body(default=None)) -> JSONResponse:
     # json_body = json.dumps(body)
     # conv_json_body = json.loads(json_body)
     if op_type.id == "login":

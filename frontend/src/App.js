@@ -10,10 +10,13 @@ class App extends React.Component {
         super(props)
 
         this.state = {
-            window: "login"
+            window: "login",
+            name: "",
+            surname: ""
         }
 
         this.changeState = this.changeState.bind(this)
+        this.userData = {}
     }
 
     render() {
@@ -45,15 +48,19 @@ class App extends React.Component {
                 <div className="card">
                     <Header title="Профиль" />
                     <main>
-                        <Card onChange={this.changeState} />
+                        <Card onChange={this.changeState} userData={this.userData} />
                     </main>
 
                 </div>
             )
     }
 
-    changeState(state) {
+    changeState(state, additionalData = null) {
         this.setState({ window: state })
+        if (additionalData)
+            this.userData = additionalData
+        else
+            this.userData = {}
     }
 }
 
