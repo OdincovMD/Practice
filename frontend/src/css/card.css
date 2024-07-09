@@ -1,0 +1,56 @@
+.card {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh; /* высота на всю страницу */
+  flex-direction: column;
+}
+
+.card h1 {
+  margin-top: 0;
+  font-weight: bold;
+  color: #333;
+}
+
+.card p {
+  margin-bottom: 10px;
+}
+
+.card .loading {
+  text-align: center;
+  font-size: 18px;
+  color: #666;
+}
+
+.card .user-data {
+  margin-top: 20px;
+}
+
+.card .user-data p {
+  margin-bottom: 10px;
+}
+
+.card .user-data p span {
+  font-weight: bold;
+}
+
+.card button {
+  width: 100%;
+  background-color: #4CAF50;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.card button:hover {
+  background-color: #3e8e41;
+}

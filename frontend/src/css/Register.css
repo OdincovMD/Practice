@@ -8,6 +8,13 @@
     flex-direction: column;
 }
 
+.register header {
+    position: relative;
+    left: -14px;
+    font-size: 50px;
+    font-weight: 600;
+}
+
 .register form input,
 .register form button {
     translate: 5px;

@@ -3,7 +3,9 @@ cmake_minimum_required(VERSION 3.21)
 project(backend)
 
 set (SOURCES 
-	src/main.cpp)
+	src/main.cpp
+	# src/check/request.cpp
+	)
 
 set(CMAKE_CXX_STANDARD 17 REQUIRED)
 
@@ -15,6 +17,8 @@ find_package(Threads REQUIRED)
 set(LIBHTTPSERVER_PATH /home/pasha/libhttpserver/build)
 
 # add httpserver header
+add_compile_definitions(HTML_SRC_PATH="${CMAKE_SOURCE_DIR}/../frontend/build/")
+
 include_directories(${CMAKE_PROJECT_DIR}/include/)
 
 add_executable(main ${SOURCES})

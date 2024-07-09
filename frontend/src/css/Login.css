@@ -8,6 +8,13 @@
     flex-direction: column;
 }
 
+.login header {
+    position: relative;
+    left: -14px;
+    font-size: 50px;
+    font-weight: 600;
+}
+
 .login form input,
 .login form button {
     position: relative;
