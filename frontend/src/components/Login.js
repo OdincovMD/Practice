@@ -10,7 +10,7 @@ class Login extends React.Component {
             login: "",
             password: "",
             backendData: {
-                isValid: "ok"
+                isValid: true
             }
         }
     }
@@ -38,15 +38,22 @@ class Login extends React.Component {
                             login: this.state.login,
                             password: this.state.password
                         }
+                        this.setState({
+                            login: "",
+                            password: "",
+                            error: null,
+                            backendData: {
+                                isValid: true
+                            }
+                        })
                         this.onLogin(loginData)
-                        this.setState({ login: "", password: "", error: null, status: "ok" })
                         loginData = {}
                     }
                     }>
                     Войти
                 </button>
                 <p>{this.state.error && `Ошибка: ${this.state.error}`}</p>
-                <p>{!this.state.error && (this.state.backendData.isValid !== "ok") && "Неправильный логин или пароль"}</p>
+                <p>{!this.state.error && !this.state.backendData.isValid && "Неправильный логин или пароль"}</p>
                 <br /><br />
                 <p>
                     Ещё не зарегестрированы?&nbsp;
@@ -79,8 +86,7 @@ class Login extends React.Component {
                 (response_json) => {
                     if (response_json.ok)
                         this.setState({
-                            backendData: response_json.data,
-                            error: null
+                            backendData: response_json.data
                         })
                     else
                         this.setState({
@@ -90,7 +96,7 @@ class Login extends React.Component {
                 }
             )
 
-        if (this.state.backendData.isValid === "ok") {
+        if (!this.state.error && this.state.backendData.isValid) {
             this.userData = {
                 name: this.state.backendData.name,      //Зависит от вида получаемого json файла
                 surname: this.state.backendData.surname //Зависит от вида получаемого json файла

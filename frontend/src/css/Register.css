@@ -13,6 +13,7 @@
     left: -14px;
     font-size: 50px;
     font-weight: 600;
+    margin-top: 40px;
 }
 
 .register form input,
@@ -35,8 +36,12 @@
     transition: transform 500ms ease, outline-color 300ms ease-in-out;
 }
 
-.register form button:hover {
+.register form button:hover:not([disabled]) {
     transform: scale(1.03);
+}
+
+.register form button[disabled] {
+    background-color: rgb(105, 105, 105);
 }
 
 .register form input:focus,
@@ -44,6 +49,24 @@
     outline-color: rgb(72, 203, 255);
     outline-style: solid;
     outline-width: 1px;
+}
+
+.register form .info {
+    color: lightcoral;
+    font-size: 14px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    animation: fadein 1s;
+}
+
+@keyframes fadein {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .register form p {
