@@ -14,6 +14,8 @@ set(CMAKE_CXX_STANDARD 17 REQUIRED)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
+find_package(Boost 1.83 REQUIRED COMPONENTS json)
+
 set(LIBHTTPSERVER_PATH /home/pasha/libhttpserver/build)
 
 # add httpserver header
@@ -26,6 +28,8 @@ add_executable(main ${SOURCES})
 target_link_libraries(main PRIVATE Threads::Threads)
 target_link_libraries(main PRIVATE microhttpd)
 
+target_link_libraries(main PRIVATE Boost::json)
+target_include_directories(main PRIVATE ${Boost_LIBRARIES})
 # add httpserver library
 # target_link_libraries(main PRIVATE ${LIBHTTPSERVER_PATH}/lib/libhttpserver.so)
 # target_include_directories(main PRIVATE ${LIBHTTPSERVER_PATH}/include/)
