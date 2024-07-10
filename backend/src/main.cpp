@@ -26,6 +26,17 @@ enum {
 	HEAD
 };
 
+template<typename>
+struct second_arg;
+
+template<typename Ret, typename f_type, typename s_type, typename... Args>
+struct second_arg<Ret(f_type, s_type, Args...)>
+{
+	typedef s_type type;
+};
+
+using HTTP_CODE_T = second_arg<decltype(MHD_queue_response)>::type;
+
 enum{
 	LOGIN,
 	REGISTER,
@@ -38,6 +49,14 @@ struct ParticipantInfo
 	std::string surname;
 	std::string login;
 	std::string passw;
+	std::ifstream file;
+	std::string file_name;
+
+private:
+	static std::string GenerateFileName()
+	{
+		static_assert(false, "not completed!");
+	};
 };
 
 struct connection_info_struct
@@ -75,9 +94,10 @@ MHD_Result ReceiveFile(const char* data, size_t data_size, ParticipantInfo& clie
 {
 	if (data_size > 0)
 	{
-		if (!CheckJsonSyntax(data))
+		if (!client.file.is_open())
 		{
-			return MHD_NO;
+			std::string client.file_name = GenerateFileName();
+			client.file.open();
 		}
 	}
 
@@ -92,6 +112,7 @@ MHD_Result LoginProcess(const char* data, size_t data_size, ParticipantInfo& cli
 		{
 			return MHD_NO;
 		}
+		connection_info_struct::json_parser.write(data);
 	}
 	return MHD_YES;
 };
@@ -104,6 +125,7 @@ MHD_Result RegisterProcess(const char* data, size_t data_size, ParticipantInfo& 
 		{
 			return MHD_NO;
 		}
+		connection_info_struct::json_parser.write(data);
 	}
 
 	return MHD_YES;
@@ -111,8 +133,7 @@ MHD_Result RegisterProcess(const char* data, size_t data_size, ParticipantInfo& 
 
 // get second parameter of function
 
-template <typename HTTP_CODE_T>
-MHD_Result SendBadRequest(HTTP_CODE_T http_code)
+MHD_Result SendBadRequest(MHD_Connection* connection, HTTP_CODE_T code)
 {
 	response =
 		MHD_create_response_from_buffer (strlen (""), (void *)"",
@@ -122,29 +143,28 @@ MHD_Result SendBadRequest(HTTP_CODE_T http_code)
 		return MHD_NO;
   	}
 
-	ret = MHD_queue_response (connection, MHD_HTTP_BAD_REQUEST, response);
+	ret = MHD_queue_response (connection, code, response);
 	
 	MHD_destroy_response (response);	
 	return ret;
 };
 
-MHD_Result
-SendPage (struct MHD_Connection *connection, const char *page, .. code)
+MHD_Result SendPage (struct MHD_Connection *connection, const char *page, HTTP_CODE_T code)
 {
-  enum MHD_Result ret;
-  struct MHD_Response *response;
+	enum MHD_Result ret;
+	struct MHD_Response *response;
 
 
-  response =
+	response =
 	MHD_create_response_from_buffer (strlen (page), (void *) page,
 									 MHD_RESPMEM_PERSISTENT);
-  if (!response)
+	if (!response)
 	return MHD_NO;
 
-  ret = MHD_queue_response (connection, MHD_HTTP_OK, response);
-  MHD_destroy_response (response);
+	ret = MHD_queue_response (connection, code, response);
+	MHD_destroy_response (response);
 
-  return ret;
+	return ret;
 }
 
 
@@ -190,7 +210,7 @@ request_completed (void *cls, struct MHD_Connection *connection,
 	(void) connection;  /* Unused. Silent compiler warning. */
 	(void) toe;         /* Unused. Silent compiler warning. */
 
-	if (NULL == con_info)
+	if (!con_info)
 	{
 		return;
 	}
@@ -204,6 +224,75 @@ request_completed (void *cls, struct MHD_Connection *connection,
 	*con_cls = NULL;
 }
 
+MHD_Result HandleFirstConn(MHD_Connection* connection, const char* method, 
+	connection_info_struct* con_info)
+{
+	if (0 != strcmp (method, "POST"))
+	{
+		SendBadRequest(connection, MHD_HTTP_BAD_REQUEST);
+		return MHD_NO;
+	}
+
+	con_info = new struct connection_info_struct;
+	
+	const char* c_op_typ = MHD_lookup_connection_value(connection, MHD_HEADER_KIND, "type");
+	if (!c_op_type) // NULL
+	{
+		return SendPage("HEADER <type> is needed!", MHD_HTTP_BAD_REQUEST);
+	}
+	std::string_view op_type(c_op_type);
+
+	const char* c_content_type = MHD_lookup_connection_value(connection, MHD_HEADER_KIND, "Content-Type");
+	if (!content_type)
+	{
+		return SendPage("HEADER <Content-Type> is needed!", MHD_HTTP_BAD_REQUEST);
+	}
+	std::string_view content_type(c_content_type);
+	con_info->client = new ParticipantInfo;
+
+	if (op_type.compare("login") && content_type.compare("application/json"))
+	{
+		con_info->PostProcess = &LoginProcess;
+	} else if (op_type.compare("register") && content_type.compare("application/json"))
+	{
+		con_info->PostProcess = &RegisterProcess;
+	} else if (op_type.compare("file") && content_type.compare("image/jpeg"))
+	{
+		con_info->PostProcess = &ReceiveFile;
+	} else 
+	{
+		// more information about error!
+		SendBadRequest(connection, MHD_HTTP_BAD_REQUEST);
+		return MHD_NO;
+	}
+	
+	*con_cls = (void *) con_info;
+
+	return MHD_YES;
+};
+
+MHD_Result HandleNextConn(MHD_Connection* connection, const char* upload_data, 
+	size_t* upload_data_size, connection_info_struct* con_info)
+{
+	if (*upload_data_size > 0)
+	{
+		con_info->PostProcess(upload_data, *upload_data_size, *con_info->client);
+		*upload_data_size = 0;
+
+		return MHD_YES;
+	}
+
+	// data were process
+	if (!con_info->client->isCompleted())
+	{
+		return MHD_NO;
+	}
+
+	connection_info_struct::json_parser.reset();
+
+	return MHD_YES;
+};
+
 MHD_Result answer_to_connection (void *cls, struct MHD_Connection *connection,
 					  const char *url, const char *method,
 					  const char *version, const char *upload_data,
@@ -213,72 +302,15 @@ MHD_Result answer_to_connection (void *cls, struct MHD_Connection *connection,
 	(void) url;               /* Unused. Silent compiler warning. */
 	(void) version;           /* Unused. Silent compiler warning. */
 
-	if (NULL == *con_cls)
+	if (*con_cls == NULL)
 	{
-		struct connection_info_struct* con_info = new struct connection_info_struct;
-		if (NULL == con_info)
-		{
-			return MHD_NO;
-		}
-
-		if (0 == strcmp (method, "POST"))
-		{
-			con_info->connectiontype = POST;
-		} else
-		{
-		  con_info->connectiontype = GET;
-		}
-
-		*con_cls = (void *) con_info;
-
-		return MHD_YES;
+		*con_cls = new connection_info_struct;
+		return HandleFirstConn(connection, method, reinterpret_cast<connection_info_struct*>(*con_cls));
 	}
+	// only post method
 
-	if (0 == strcmp (method, "POST"))
-	{
-		struct MHD_Connection* con_info = *con_cls;
-
-		const char* c_op_typ = MHD_lookup_connection_value(connection, 
-			MHD_HEADER_KING, "type");
-		if (!c_op_type) // NULL
-		{
-			return SendPage("HEADER <type> is needed!", MHD_HTTP_BAD_REQUEST);
-		}
-
-		std::string_view op_type(c_op_type);
-		if (op_type)
-
-		if (op_type.compare("login"))
-		{
-			con_info->PostProcess = &LoginProcess;
-		} else if (op_type.compare("register"))
-		{
-			con_info->PostProcess = &RegisterProcess;
-		} else if (op_type.compare("file"))
-		{
-			con_info->PostProcess = &ReceiveFile;
-		} else 
-		{
-			return SendBadRequest(connection);
-		}
-
-		if (*upload_data_size != 0)
-		{
-			con_info->PostProcess(upload_data, *upload_data_size, *con_info->client);
-			*upload_data_size = 0;
-
-			return MHD_YES;
-		} 
-
-		// data were process
-		if (!con_info->client->isCompleted())
-		{
-			return MHD_NO;
-		}
-		connection_info_struct::json_parser.reset();
-	}
-
-	return MHD_YES;
+	return HandleNextConn(connection, upload_data, upload_data_size, 
+		reinterpret_cast<connection_info_struct*>(*con_cls));
 }
 
 MHD_Daemon StartWebserver(unsigned int flags, unsigned short port, 
@@ -297,6 +329,8 @@ MHD_Daemon StartWebserver(unsigned int flags, unsigned short port,
 
 int main ()
 {
+	seed(NULL);
+
 	struct MHD_Daemon *daemon;
 
 	daemon = StartWebserver(MHD_USE_AUTO | MHD_USE_INTERNAL_POLLING_THREAD,
@@ -305,7 +339,9 @@ int main ()
 							 MHD_OPTION_NOTIFY_COMPLETED, request_completed,
 							 NULL, MHD_OPTION_END);
 	if (NULL == daemon)
-	return 1;
+	{
+		return 1;
+	}
 
 	(void) getchar ();
 
