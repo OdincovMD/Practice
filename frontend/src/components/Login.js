@@ -95,7 +95,7 @@ class Login extends React.Component {
                 name: this.state.backendData.name,      //Зависит от вида получаемого json файла
                 surname: this.state.backendData.surname //Зависит от вида получаемого json файла
             }
-            this.props.onChange("card", this.userData)
+            this.props.onChange("profile", this.userData)
         }
     }
 }

@@ -2,7 +2,7 @@ import React from "react"
 import Header from "./components/Header"
 import Login from "./components/Login"
 import Register from "./components/Register"
-import Card from "./components/Profile"
+import Profile from "./components/Profile"
 
 class App extends React.Component {
 
@@ -43,12 +43,12 @@ class App extends React.Component {
 
                 </div>)
 
-        else if (this.state.window === "card")
+        else if (this.state.window === "profile")
             return (
-                <div className="card">
+                <div className="profile">
                     <Header title="Профиль" />
                     <main>
-                        <Card onChange={this.changeState} userData={this.userData} />
+                        <Profile onChange={this.changeState} userData={this.userData} />
                     </main>
 
                 </div>
