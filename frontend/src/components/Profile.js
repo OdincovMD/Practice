@@ -1,7 +1,7 @@
 import React from 'react'
 import BACKEND_URL from "../config"
 
-class Card extends React.Component {
+class Profile extends React.Component {
 
   constructor(props) {
     super(props)
@@ -43,4 +43,4 @@ class Card extends React.Component {
   };
 }
 
-export default Card
+export default Profile

@@ -2,7 +2,7 @@ import React from "react"
 import Header from "./components/Header"
 import Login from "./components/Login"
 import Register from "./components/Register"
-import Card from "./components/Card"
+import Card from "./components/Profile"
 
 class App extends React.Component {
 
