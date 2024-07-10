@@ -9,7 +9,9 @@ class Login extends React.Component {
             error: null,
             login: "",
             password: "",
-            backendData: ""
+            backendData: {
+                isValid: "ok"
+            }
         }
     }
 
@@ -43,8 +45,8 @@ class Login extends React.Component {
                     }>
                     Войти
                 </button>
-                <p>{this.state.error && "Произошла ошибка при получении информации"}</p>
-                <p>{!this.state.error && (this.state.status !== "ok") && "Неправильный логин или пароль"}</p>
+                <p>{this.state.error && `Ошибка: ${this.state.error}`}</p>
+                <p>{!this.state.error && (this.state.backendData.isValid !== "ok") && "Неправильный логин или пароль"}</p>
                 <br /><br />
                 <p>
                     Ещё не зарегестрированы?&nbsp;
@@ -64,7 +66,6 @@ class Login extends React.Component {
         )
     }
 
-    // answer = XMLHttpRequest()
     onLogin(loginData) {
         fetch(BACKEND_URL, {
             method: "post",
@@ -78,7 +79,8 @@ class Login extends React.Component {
                 (response_json) => {
                     if (response_json.ok)
                         this.setState({
-                            backendData: response_json.data
+                            backendData: response_json.data,
+                            error: null
                         })
                     else
                         this.setState({
@@ -88,12 +90,13 @@ class Login extends React.Component {
                 }
             )
 
-        if (this.state.backendData.isValid === "ok")
+        if (this.state.backendData.isValid === "ok") {
             this.userData = {
                 name: this.state.backendData.name,      //Зависит от вида получаемого json файла
                 surname: this.state.backendData.surname //Зависит от вида получаемого json файла
             }
-            this.props.onChange("card")
+            this.props.onChange("card", this.userData)
+        }
     }
 }
 
