@@ -1,10 +1,39 @@
-FROM tiangolo/uvicorn-gunicorn-fastapi:python3.9
+FROM debian:12
 
-COPY app/main.py /app
-COPY requirements.txt requirements.txt
-EXPOSE 80
-ENV IS_IN_DOCKER=true
+COPY . .
 
-RUN pip3 install -r requirements.txt
+# preconfiguration
+RUN apt-get update && \
+	apt-get install build-essential libssl-dev -y
 
-CMD ["uvicorn", "main:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "8000"]
+RUN wget https://github.com/Kitware/CMake/releases/download/v3.28.1/cmake-3.28.1.tar.gz && \
+	tar -xvzf cmake-3.28.1.tar.gz && \
+	rm cmake-3.28.1.tar.gz
+
+# boost
+RUN apt-get install libboost-all-dev
+
+WORKDIR ./cmake-3.28.1
+
+RUN ./bootstrap && \
+	make && \
+	make install
+
+WORKDIR ..
+
+RUN wget https://gitlab.com/libmicrohttpd/libmicrohttpd/-/archive/master/libmicrohttpd-master.tar.gz && \
+	tar -xvzf libmicrohttpd-master.tar.gz && \
+	rm libmicrohttpd-master.tar.gz
+
+# build libmicrohttpd
+WORKDIR ./libmicrohttpd-master
+
+RUN ./bootstrap && \
+	make && \
+	make install
+
+WORKDIR ../build
+
+RUN cmake ..
+
+CMD ["./main"]
