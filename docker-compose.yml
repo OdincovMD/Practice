@@ -1,12 +1,14 @@
 version: "2"
 services:
   frontend:
-    image: frontend
+    build: ./frontend
     ports:
       - 3000:3000
+    expose:
+      - 3000
     depends_on:
       - backend
   backend:
-    image: backend
+    build: ./backend
     ports:
-      - 8888
+      - 8000:8000

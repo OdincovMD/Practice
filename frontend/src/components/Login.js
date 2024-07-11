@@ -9,10 +9,9 @@ class Login extends React.Component {
             error: null,
             login: "",
             password: "",
-            backendData: {
-                isValid: true
-            }
         }
+
+        this.backendData = { isValid: 1 }
     }
 
     render() {
@@ -46,10 +45,8 @@ class Login extends React.Component {
                             login: "",
                             password: "",
                             error: null,
-                            backendData: {
-                                isValid: true
-                            }
                         })
+                        this.backendData = { isValid: 1 }
                         this.onLogin(loginData)
                         loginData = {}
                     }
@@ -57,7 +54,7 @@ class Login extends React.Component {
                     Войти
                 </button>
                 <p>{this.state.error && `Ошибка: ${this.state.error}`}</p>
-                <p>{!this.state.error && !this.state.backendData.isValid && "Неправильный логин или пароль"}</p>
+                <p>{!this.state.error && !this.backendData.isValid && "Неправильный логин или пароль"}</p>
                 <br /><br />
                 <p>
                     Ещё не зарегестрированы?&nbsp;
@@ -78,35 +75,38 @@ class Login extends React.Component {
     }
 
     onLogin(loginData) {
-        fetch(BACKEND_URL, {
-            method: "post",
-            headers: {
-                "type": "login"
-            },
+
+        loginData = { "login": loginData }
+        let userData = {}
+        fetch(`${BACKEND_URL}/login`, {
+            method: "POST",
             body: JSON.stringify(loginData)
         })
             .then(response => response.json())
             .then(
-                (response_json) => {
-                    if (response_json.ok)
-                        this.setState({
-                            backendData: response_json.data
-                        })
-                    else
-                        this.setState({
-                            error: response_json.status
-                        })
-
+                (responseJSON) => {
+                    this.backendData = responseJSON
                 }
             )
-
-        if (!this.state.error && this.state.backendData.isValid) {
-            this.userData = {
-                name: this.state.backendData.name,      //Зависит от вида получаемого json файла
-                surname: this.state.backendData.surname //Зависит от вида получаемого json файла
+            .then(() => {
+                console.log("2")
+                console.log(this.backendData)
+                if (!this.state.error && this.backendData.isValid) {
+                    userData = {
+                        firstName: this.backendData.data.firstName,
+                        lastName: this.backendData.data.lastName
+                    }
+                    this.props.onChange("profile", userData)
+                }
             }
-            this.props.onChange("profile", this.userData)
-        }
+            )
+            .catch(
+                error => {
+                    this.setState({
+                        error: error
+                    })
+                }
+            )
     }
 }
 

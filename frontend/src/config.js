@@ -1,2 +1,2 @@
-const BACKEND_URL = "http://backend:8888"
+const BACKEND_URL = "http://localhost:8000"
 export default BACKEND_URL

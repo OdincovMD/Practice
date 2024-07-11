@@ -6,8 +6,8 @@ class Profile extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      name: this.props.userData.name,
-      surname: this.props.userData.surname,
+      firstName: this.props.userData.firstName,
+      lastName: this.props.userData.lastName,
       // status: 'admin',
       loading: false
     }
@@ -26,8 +26,8 @@ class Profile extends React.Component {
         <div className="loading" >
           <div className="userdata">
             <h1 style={{ marginBottom: 20 }}> Страница пользователя</h1>
-            <p>Имя: {this.state.name}</p>
-            <p>Фамилия: {this.state.surname}</p>
+            <p>Имя: {this.state.firstName}</p>
+            <p>Фамилия: {this.state.lastName}</p>
             {/* <p style={{ marginBottom: 20 }}>Статус: {this.state.status === 'admin' ? 'Администратор' : 'Врач'}</p> */}
             <div style={{ textAlign: 'center' }}>
               <button style={{ display: 'block', marginBottom: 10 }} onClick={() => { this.props.onChange("editProfile") }}>Изменить данные о пользователе</button>

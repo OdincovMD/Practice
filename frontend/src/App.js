@@ -11,8 +11,6 @@ class App extends React.Component {
 
         this.state = {
             window: "login",
-            name: "",
-            surname: ""
         }
 
         this.changeState = this.changeState.bind(this)
@@ -57,6 +55,7 @@ class App extends React.Component {
 
     changeState(state, additionalData = null) {
         this.setState({ window: state })
+        console.log(additionalData)
         if (additionalData)
             this.userData = additionalData
         else

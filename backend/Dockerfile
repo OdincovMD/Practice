@@ -1,46 +1,63 @@
-FROM debian:12
+# FROM debian:12
 
-ENV INIT_PATH = /app
+# ENV INIT_PATH = /app
 
-WORKDIR = ${INIT_PATH}
+# WORKDIR = ${INIT_PATH}
 
-COPY . .
+# COPY . .
 
-# preconfiguration
-RUN apt-get update -y && \
-	apt-get install build-essential libssl-dev -y && \
-	apt-get install -y wget
+# # preconfiguration
+# RUN apt-get update -y && \
+# 	apt-get install build-essential libssl-dev -y && \
+# 	apt-get install -y wget
 
-RUN wget https://github.com/Kitware/CMake/releases/download/v3.28.1/cmake-3.28.1.tar.gz && \
-	tar -xvzf cmake-3.28.1.tar.gz && \
-	rm cmake-3.28.1.tar.gz
+# RUN wget https://github.com/Kitware/CMake/releases/download/v3.28.1/cmake-3.28.1.tar.gz && \
+# 	tar -xfz cmake-3.28.1.tar.gz && \
+# 	rm cmake-3.28.1.tar.gz
 
-# boost
-RUN apt-get install libboost-json-dev -y
+# # boost
+# RUN apt-get install libboost-all-dev -y
 
-WORKDIR ${INIT_PATH}/cmake-3.28.1
+# WORKDIR ${INIT_PATH}/cmake-3.28.1
 
-RUN bash ./bootstrap && \
-	make && \
-	make install
+# RUN pwd
+# RUN ls
 
-WORKDIR ${INIT_PATH}
+# RUN bash ./bootstrap && \
+# 	make && \
+# 	make install
 
-RUN wget https://gitlab.com/libmicrohttpd/libmicrohttpd/-/archive/master/libmicrohttpd-master.tar.gz && \
-	tar -xvzf libmicrohttpd-master.tar.gz && \
-	rm libmicrohttpd-master.tar.gz
+# WORKDIR ${INIT_PATH}
 
-# build libmicrohttpd
-WORKDIR ${INIT_PATH}/libmicrohttpd-master
+# RUN wget https://gitlab.com/libmicrohttpd/libmicrohttpd/-/archive/master/libmicrohttpd-master.tar.gz && \
+# 	tar -xfz libmicrohttpd-master.tar.gz && \
+# 	rm libmicrohttpd-master.tar.gz
 
-RUN bash ./bootstrap && \
-	make && \
-	make install
+# # build libmicrohttpd
+# WORKDIR ${INIT_PATH}/libmicrohttpd-master
 
-WORKDIR ${INIT_PATH}/build
+# RUN pwd
+# RUN ls
 
-RUN cmake ..
+# RUN bash ./bootstrap && \
+# 	make && \
+# 	make install
 
-EXPOSE 8888
+# WORKDIR ${INIT_PATH}/build
 
-CMD ["./main"]
+# RUN cmake ..
+
+# EXPOSE 8888
+
+# CMD ["./main"]
+
+FROM tiangolo/uvicorn-gunicorn-fastapi:python3.9
+
+COPY app/main.py /app
+COPY requirements.txt requirements.txt
+EXPOSE 8000
+ENV IS_IN_DOCKER=true
+
+RUN pip3 install -r requirements.txt
+
+CMD ["uvicorn", "main:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "8000"]
