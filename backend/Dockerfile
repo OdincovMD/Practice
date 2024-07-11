@@ -2,6 +2,10 @@ FROM debian:12
 
 COPY . .
 
+ENV INIT_PATH = /app
+
+WORKDIR ${INIT_PATH}
+
 # preconfiguration
 RUN apt-get update && \
 	apt-get install build-essential libssl-dev -y
@@ -19,7 +23,7 @@ RUN ./bootstrap && \
 	make && \
 	make install
 
-WORKDIR ..
+RUN cd ..
 
 RUN wget https://gitlab.com/libmicrohttpd/libmicrohttpd/-/archive/master/libmicrohttpd-master.tar.gz && \
 	tar -xzf libmicrohttpd-master.tar.gz -y && \
@@ -32,7 +36,7 @@ RUN ./bootstrap && \
 	make && \
 	make install
 
-WORKDIR ../build
+RUN cd ../build
 
 RUN cmake .. && make .
 
