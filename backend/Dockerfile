@@ -20,7 +20,7 @@ RUN apt-get install libboost-json-dev -y
 
 WORKDIR ${INIT_PATH}/cmake-3.28.1
 
-RUN ./bootstrap && \
+RUN bash ./bootstrap && \
 	make && \
 	make install
 
@@ -33,7 +33,7 @@ RUN wget https://gitlab.com/libmicrohttpd/libmicrohttpd/-/archive/master/libmicr
 # build libmicrohttpd
 WORKDIR ${INIT_PATH}/libmicrohttpd-master
 
-RUN ./bootstrap && \
+RUN bash ./bootstrap && \
 	make && \
 	make install
 
