@@ -1,62 +1,59 @@
-from fastapi import FastAPI, Request
-from fastapi.middleware.cors import CORSMiddleware
+import socket
 import torch
 from torchvision import transforms
-import torchvision
 import numpy as np
-import os
-os.chdir(os.path.dirname(__file__))
-
-
+from PIL import Image
+import io
 
 from image import adjust_contrast_my, calculate_contrast, convert, NumpyImageDataset
 from model import CustomNeuralNetResNet
 
-
-app = FastAPI()
-
-
 model = CustomNeuralNetResNet(3)
-model.load_state_dict(torch.load('top1acc84.pth', map_location=torch.device('cpu')))
+model.load_state_dict(torch.load('best_model.pth', map_location=torch.device('cpu')))
 model.eval()
 
 test_transform = transforms.Compose([
-        transforms.Lambda(lambda x: adjust_contrast_my(x, 1.3 if calculate_contrast(x) < 55 else 1)),
-        transforms.Resize((224,224)),
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
+    transforms.Lambda(lambda x: adjust_contrast_my(x, 1.3 if calculate_contrast(x) < 55 else 1)),
+    transforms.Resize((224, 224)),
+    transforms.ToTensor()
+])
 
-class_names = ['Áàêòåðèàëüíàÿ ïíåâìîíèÿ', 'Íîðìàëüíî', 'Âèðóñíàÿ ïíåâìîíèÿ']
+class_names = ['Ð‘Ð°ÐºÑ‚ÐµÑ€Ð¸Ð°Ð»ÑŒÐ½Ð°Ñ Ð¿Ð½ÐµÐ²Ð¼Ð¾Ð½Ð¸Ñ', 'ÐÐµÑ‚ Ð¿Ð½ÐµÐ²Ð¼Ð¾Ð½Ð¸Ð¸', 'Ð’Ð¸Ñ€ÑƒÑÐ½Ð°Ñ Ð¿Ð½ÐµÐ²Ð¼Ð¾Ð½Ð¸Ñ']
 
-# CORS settings
-origins = ["http://localhost:8080"]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-@app.post('/image')
-async def image_post_request(img):
-    img = convert(Request.json['image'])
+def process_image(image_bytes):
+    image = Image.open(io.BytesIO(image_bytes))
+    image = image.convert('RGB')  # Ensure the image is in RGB format
+    img = np.array(image)
+    
     dataset = NumpyImageDataset([img], test_transform)
-    dataloader = torchvision.datasets.DataLoader(dataset=dataset, batch_size=1, shuffle=False)
+    dataloader = torch.utils.data.DataLoader(dataset=dataset, batch_size=1, shuffle=False)
 
     iter_obj = iter(dataloader)
     inputs, labels, paths = next(iter_obj)
-    
-    with torch.set_grad_enabled(False):
+
+    with torch.no_grad():
         preds = model(inputs)
 
-    for _, (_, pred) in enumerate(zip(inputs, preds)):
-        pred = torch.nn.functional.softmax(pred, dim=0).cpu().numpy()
-        
-        predicted_class = np.argmax(pred)
+    pred = torch.nn.functional.softmax(preds[0], dim=0).cpu().numpy()
+    predicted_class = np.argmax(pred)
     
-    return {"result": class_names[predicted_class], "probability" : pred[predicted_class]}
+    return {"result": class_names[predicted_class], "probability": float(pred[predicted_class])}
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host='0.0.0.0', port=5000)
+
+HOST = "127.0.0.1"  # Standard loopback interface address (localhost)
+PORT = 9000  
+
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    s.bind((HOST, PORT))
+    s.listen()
+    conn, addr = s.accept()
+    with conn:
+        while True:
+            data = conn.recv(4096) 
+            if not data:
+                continue
+            result = process_image(data)
+            response = f"Result: {result['result']}, Probability: {round(result['probability'], 2)}"
+            conn.sendall(response.encode('utf-8'))
+            data = None
+

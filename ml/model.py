@@ -10,16 +10,10 @@ class CustomNeuralNetResNet(torch.nn.Module):
         for param in self.net.parameters():
             param.requires_grad = False
 
-        fc_inputs = self.net.fc.in_features
+        TransferModelOutputs = self.net.fc.in_features
         self.net.fc = torch.nn.Sequential(
-            torch.nn.Linear(fc_inputs, 256),
-            torch.nn.ReLU(),
-            torch.nn.Linear(256, 128),
-            torch.nn.Sigmoid(),
-            torch.nn.Linear(128, 3),
+            torch.nn.Linear(TransferModelOutputs, outputs_number)
         )
-        
 
     def forward(self, x):
-        x = self.net(x)
-        return x
+        return self.net(x)
