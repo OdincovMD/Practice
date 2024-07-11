@@ -41,4 +41,6 @@ WORKDIR $INIT_PATH/build
 
 RUN cmake ..
 
+RUN make .
+
 CMD ["./main"]
