@@ -30,11 +30,15 @@
     outline-color: #222;
     font-size: 20px;
     box-sizing: border-box;
-    transition: transform 500ms ease, outline-color 300ms ease-in-out;
+    transition: transform 500ms ease, outline-color 300ms ease-in-out, background-color 300ms linear;
 }
 
-.login form button:hover {
+.login form button:hover:not([disabled]) {
     transform: scale(1.03);
+}
+
+.login form button[disabled] {
+    background-color: rgb(105, 105, 105);
 }
 
 .login form input:focus,

@@ -84,9 +84,15 @@ class Register extends React.Component {
                 <br />
                 <button
                     type="button"
-                    disabled={(regex.test(this.state.password) && (this.state.password === this.state.rep_password))
-                        ? false
-                        : true}
+                    disabled={
+                        (regex.test(this.state.password)
+                            && (this.state.password === this.state.rep_password)
+                            && this.state.lastName
+                            && this.state.firstName
+                            && this.state.login)
+                            ? false
+                            : true
+                    }
                     onClick={() => {
                         this.myForm.reset()
                         registerData = {

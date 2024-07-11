@@ -16,6 +16,7 @@ class Login extends React.Component {
     }
 
     render() {
+        const regex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$/
         let loginData = {}
         return (
             <form ref={(el) => this.myForm = el}>
@@ -32,6 +33,9 @@ class Login extends React.Component {
                 <br />
                 <button
                     type="button"
+                    disabled={!(
+                        this.state.password
+                        && this.state.login)}
                     onClick={() => {
                         this.myForm.reset()
                         loginData = {
