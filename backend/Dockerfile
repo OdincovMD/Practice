@@ -16,7 +16,7 @@ RUN wget https://github.com/Kitware/CMake/releases/download/v3.28.1/cmake-3.28.1
 	rm cmake-3.28.1.tar.gz
 
 # boost
-RUN apt-get install libboost-all-dev -y
+RUN apt-get install libboost-json-dev -y
 
 WORKDIR ${INIT_PATH}/cmake-3.28.1
 
