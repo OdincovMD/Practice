@@ -1,5 +1,3 @@
-backend/build/*
-
 # dependencies
 /node_modules
 /package-lock.json
@@ -8,6 +6,13 @@ backend/build/*
 
 # testing
 /coverage
+/backend/pyapp/__pycache__/*
+
+# production
+frontend/build/*
+backend/build/*
+backend/pyapp/*
+backend/src/check_request.cpp
 
 # misc
 .DS_Store
@@ -20,3 +25,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 node_modules
+
+# environment
+/.vscode/*

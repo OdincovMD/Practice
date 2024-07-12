@@ -1,19 +1,22 @@
 import React from "react"
+import BACKEND_URL from "../config"
 
 class Login extends React.Component {
 
     constructor(props) {
         super(props)
         this.state = {
-            status: "ok",
             error: null,
             login: "",
-            password: ""
+            password: "",
         }
+
+        this.backendData = { isValid: 1 }
     }
 
     render() {
-        let userData = {}
+        // const regex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$/
+        let loginData = {}
         return (
             <form ref={(el) => this.myForm = el}>
                 <input
@@ -29,20 +32,29 @@ class Login extends React.Component {
                 <br />
                 <button
                     type="button"
+                    disabled={!(
+                        this.state.password
+                        && this.state.login)}
                     onClick={() => {
                         this.myForm.reset()
-                        userData = {
+                        loginData = {
                             login: this.state.login,
                             password: this.state.password
                         }
-                        this.setState({ login: "", password: "", error: null, status: "ok" })
-                        this.onLogin(userData)
+                        this.setState({
+                            login: "",
+                            password: "",
+                            error: null,
+                        })
+                        this.backendData = { isValid: 1 }
+                        this.onLogin(loginData)
+                        loginData = {}
                     }
                     }>
                     Войти
                 </button>
-                <p>{this.state.error && "Произошла ошибка при получении информации"}</p>
-                <p>{!this.state.error && (this.state.status !== "ok") && "Неправильный логин или пароль"}</p>
+                <p>{this.state.error && `Ошибка: ${this.state.error}`}</p>
+                <p>{!this.state.error && !this.backendData.isValid && "Неправильный логин или пароль"}</p>
                 <br /><br />
                 <p>
                     Ещё не зарегестрированы?&nbsp;
@@ -62,31 +74,33 @@ class Login extends React.Component {
         )
     }
 
-    onLogin(loginData) {
-        fetch("some/url", {
-            method: "post",
+    async onLogin(loginData) {
+
+        let userData = {}
+        let response = await fetch(`${BACKEND_URL}/login`, {
+            method: "POST",
             headers: {
-                "type": "login"
+                "Content-type": "application/json",
+                "accept": "application/json"
             },
             body: JSON.stringify(loginData)
         })
-            .then(res => res.json())
-            .then(
-                (result) => {
-                    this.setState({
-                        status: result.status
-                    })
-                },
 
-                (error) => {
-                    this.setState({
-                        error
-                    })
+        if (response.ok) {
+            var responseJSON = await response.json()
+            this.setState({ error: null })
+            this.backendData = responseJSON
+            if (this.backendData.isValid) {
+                userData = {
+                    firstName: this.backendData.data.firstName,
+                    lastName: this.backendData.data.lastName
                 }
-            )
-
-        if (this.state.status === "ok")
-            this.props.onChange("card")
+                this.props.onChange("profile", userData)
+            }
+        }
+        else {
+            this.setState({ error: response.status })
+        }
     }
 }
 
