@@ -136,36 +136,29 @@ class Register extends React.Component {
         )
     }
 
-    onRegister(registerData) {
+    async onRegister(registerData) {
 
-        registerData = { "register": registerData }
-        fetch(`${BACKEND_URL}/register`, {
+        let response = await fetch(`${BACKEND_URL}/register`, {
             method: "POST",
+            headers: {
+                "Content-type": "application/json;charset=utf-8",
+                "accept": "application/json;charset=utf-8"
+            },
             body: JSON.stringify(registerData)
         })
-            .then(response => response.json())
-            .then(
-                (responseJSON) => {
-                    this.setState({
-                        error: null
-                    })
-                }
-            )
-            .catch(
-                error => {
-                    this.setState({
-                        error: error
-                    })
-                }
-            )
 
-        // Бэк должен возвращать, есть ли пользователь с таким логином в БД
-        if (!this.state.error) {
+        if (response.ok) {
+            var responseJSON = await response.json()
+            this.setState({ error: null })
+            // Бэк должен возвращать, есть ли пользователь с таким логином в БД, и если нет, то разрешить регистрацию
             this.userData = {
-                name: registerData.firstName,      //Зависит от вида получаемого json файла
-                surname: registerData.lastName //Зависит от вида получаемого json файла
+                name: registerData.firstName,
+                surname: registerData.lastName
             }
             this.props.onChange("profile", this.userData)
+        }
+        else {
+            this.setState({ error: response.status })
         }
     }
 

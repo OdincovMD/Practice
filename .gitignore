@@ -6,10 +6,12 @@
 
 # testing
 /coverage
+/backend/pyapp/__pycache__/*
 
 # production
 frontend/build/*
 backend/build/*
+backend/pyapp/*
 backend/src/check_request.cpp
 
 # misc

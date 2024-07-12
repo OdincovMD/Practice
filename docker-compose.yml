@@ -1,7 +1,8 @@
 version: "2"
 services:
   frontend:
-    build: ./frontend
+    build: 
+      context: ./frontend
     ports:
       - 3000:3000
     expose:
@@ -9,6 +10,7 @@ services:
     depends_on:
       - backend
   backend:
-    build: ./backend
+    build: 
+      context: ./backend/pyapp
     ports:
       - 8000:8000

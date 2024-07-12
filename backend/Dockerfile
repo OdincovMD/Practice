@@ -2,41 +2,45 @@ FROM debian:12
 
 COPY . .
 
-ENV INIT_PATH = /app
-
-WORKDIR ${INIT_PATH}
-
 # preconfiguration
 RUN apt-get update && \
-	apt-get install build-essential libssl-dev -y
+	apt-get install build-essential libssl-dev -y && \
+	apt-get install -y wget
+
+RUN apt-get install perl  -y && \
+	apt-get install m4 -y && \
+	apt-get install autoconf -y && \
+	apt-get install automake -y
+
+WORKDIR /app/
 
 RUN wget https://github.com/Kitware/CMake/releases/download/v3.28.1/cmake-3.28.1.tar.gz && \
-	tar -xzf cmake-3.28.1.tar.gz -y && \
+	tar -xzf cmake-3.28.1.tar.gz && \
 	rm cmake-3.28.1.tar.gz
 
 # boost
-RUN apt-get install libboost-all-dev
+RUN apt-get install libboost-all-dev -y
 
-RUN ./cmake-3.28.1
+WORKDIR /app/cmake-3.28.1
 
 RUN ./bootstrap && \
 	make && \
 	make install
 
-RUN cd ..
+WORKDIR /app/
 
 RUN wget https://gitlab.com/libmicrohttpd/libmicrohttpd/-/archive/master/libmicrohttpd-master.tar.gz && \
-	tar -xzf libmicrohttpd-master.tar.gz -y && \
+	tar -xzf libmicrohttpd-master.tar.gz && \
 	rm libmicrohttpd-master.tar.gz
 
 # cd libmicrohttpd directory
-RUN cd ./libmicrohttpd-master
+WORKDIR /app/libmicrohttpd-master
 
 RUN ./bootstrap && \
 	make && \
 	make install
 
-RUN cd ../build
+WORKDIR /app/build
 
 RUN cmake .. && make .
 

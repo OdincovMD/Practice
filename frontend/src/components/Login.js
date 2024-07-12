@@ -15,7 +15,7 @@ class Login extends React.Component {
     }
 
     render() {
-        const regex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$/
+        // const regex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$/
         let loginData = {}
         return (
             <form ref={(el) => this.myForm = el}>
@@ -74,39 +74,33 @@ class Login extends React.Component {
         )
     }
 
-    onLogin(loginData) {
+    async onLogin(loginData) {
 
-        loginData = { "login": loginData }
         let userData = {}
-        fetch(`${BACKEND_URL}/login`, {
+        let response = await fetch(`${BACKEND_URL}/login`, {
             method: "POST",
+            headers: {
+                "Content-type": "application/json",
+                "accept": "application/json"
+            },
             body: JSON.stringify(loginData)
         })
-            .then(response => response.json())
-            .then(
-                (responseJSON) => {
-                    this.backendData = responseJSON
+
+        if (response.ok) {
+            var responseJSON = await response.json()
+            this.setState({ error: null })
+            this.backendData = responseJSON
+            if (this.backendData.isValid) {
+                userData = {
+                    firstName: this.backendData.data.firstName,
+                    lastName: this.backendData.data.lastName
                 }
-            )
-            .then(() => {
-                console.log("2")
-                console.log(this.backendData)
-                if (!this.state.error && this.backendData.isValid) {
-                    userData = {
-                        firstName: this.backendData.data.firstName,
-                        lastName: this.backendData.data.lastName
-                    }
-                    this.props.onChange("profile", userData)
-                }
+                this.props.onChange("profile", userData)
             }
-            )
-            .catch(
-                error => {
-                    this.setState({
-                        error: error
-                    })
-                }
-            )
+        }
+        else {
+            this.setState({ error: response.status })
+        }
     }
 }
 
