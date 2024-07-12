@@ -3,7 +3,7 @@ import torch
 from torchvision import transforms
 import numpy as np
 import os
-from ml.programm.image import convert_to_PIL, adjust_contrast_my, calculate_contrast, NumpyImageDataset
+from image import convert_to_PIL, adjust_contrast_my, calculate_contrast, NumpyImageDataset
 from model import CustomNeuralNetResNet
 
 os.chdir(os.path.dirname(__file__))
@@ -22,7 +22,6 @@ transform = transforms.Compose([
 
 class_names = ['Бактериальная пневмония',
                'Нет пневмонии', 'Вирусная пневмония']
-
 
 def process_image(image_bytes):
     img = convert_to_PIL(image_bytes)
