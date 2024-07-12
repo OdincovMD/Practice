@@ -3,7 +3,7 @@ import torch
 from torchvision import transforms
 import numpy as np
 import os
-from image import convert_to_PIL, adjust_contrast_my, calculate_contrast, NumpyImageDataset
+from ml.programm.image import convert_to_PIL, adjust_contrast_my, calculate_contrast, NumpyImageDataset
 from model import CustomNeuralNetResNet
 
 os.chdir(os.path.dirname(__file__))
