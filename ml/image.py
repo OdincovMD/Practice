@@ -1,5 +1,3 @@
-import re
-import base64
 import numpy as np
 from io import BytesIO
 from PIL import Image
@@ -7,15 +5,10 @@ from torch.utils.data import Dataset
 from torchvision.transforms.functional import adjust_contrast
 import cv2
 
-def convert(data):
-    img = base64_to_image(data)
-    return img
-
-def base64_to_image(data):
-    b64_img = re.sub('^data:image/png;base64,', '', data)
-    decoded_img = base64.b64decode(b64_img)
-    pil_img = Image.open(BytesIO(decoded_img))
-    return pil_img
+def convert_to_PIL(data):
+    image = Image.open(BytesIO(data))
+    image = image.convert('RGB')
+    return image
 
 def adjust_contrast_my(image, factor):
     return adjust_contrast(image, factor)
