@@ -73,31 +73,36 @@ class Login extends React.Component {
     async onLogin(loginData) {
 
         let userData = {}
-        let response = await fetch(`${BACKEND_URL}/login`, {
-            method: "POST",
-            headers: {
-                "Content-type": "application/json",
-                "accept": "application/json"
-            },
-            body: JSON.stringify(loginData)
-        })
+        try {
+            let response = await fetch(`${BACKEND_URL}/login`, {
+                method: "POST",
+                headers: {
+                    "Content-type": "application/json",
+                    "accept": "application/json"
+                },
+                body: JSON.stringify(loginData)
+            })
 
-        if (!response.ok) {
-            this.setState({ error: response.status })
-            return
-        }
+            if (!response.ok) {
+                this.setState({ error: response.status })
+                return
+            }
 
-        var responseJSON = await response.json()
-        if (!responseJSON.isValid) {
-            this.setState({ error: "Неверный логин или пароль" })
-            return
+            var responseJSON = await response.json()
+            if (!responseJSON.isValid) {
+                this.setState({ error: "Неверный логин или пароль" })
+                return
+            }
+            this.setState({ error: null })
+            userData = {
+                firstName: responseJSON.data.firstName,
+                lastName: responseJSON.data.lastName
+            }
+            this.props.onChange("profile", userData)
         }
-        this.setState({ error: null })
-        userData = {
-            firstName: responseJSON.data.firstName,
-            lastName: responseJSON.data.lastName
+        catch (err) {
+            this.setState({ error: err })
         }
-        this.props.onChange("profile", userData)
     }
 }
 

@@ -20,8 +20,12 @@ class Profile extends React.Component {
     const formData = new FormData();
     formData.append("file", this.formData);
 
+    try {
     let response = await fetch(`${BACKEND_URL}/upload`, {
       method: 'POST',
+      headers: {
+        'Content-type': "multipart/form-data",
+      },
       body: formData
     })
 
@@ -36,6 +40,10 @@ class Profile extends React.Component {
     }
 
   }
+  catch (err)  {
+    alert(`Ошибка: ${err}`)
+  }
+}
 
   render() {
     if (this.state.loading)

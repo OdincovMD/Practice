@@ -7,6 +7,8 @@
 # testing
 /coverage
 /backend/pyapp/__pycache__/*
+/ml/client.py
+/ml/programm/client.py
 
 # production
 frontend/build/*

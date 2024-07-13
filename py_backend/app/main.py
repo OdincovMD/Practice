@@ -18,10 +18,9 @@ class Register(BaseModel):
 
 
 app = FastAPI()
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex="http://localhost.*",
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -47,7 +46,7 @@ def handle_register(register: Register):
     main_table.add({"login": register.login, "password": register.password, "firstName": register.firstName, "lastName": register.lastName})
     return JSONResponse(content={"isValid": 1, "data": {"firstName": register.firstName, "lastName": register.lastName}}, status_code=status.HTTP_200_OK)
 
-@app.post("/upload/")
+@app.post("/upload")
 async def handle_upload(file: UploadFile = File(...)):
     url = "http://localhost:9000/upload"
     files = {"file": (file.filename, file.file, file.content_type)}

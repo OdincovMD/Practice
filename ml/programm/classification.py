@@ -8,6 +8,7 @@ from model import CustomNeuralNetResNet
 
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 
 os.chdir(os.path.dirname(__file__))
@@ -66,6 +67,14 @@ def process_image(image_bytes):
 
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 @app.post("/upload")
 async def upload_image(file: UploadFile = File(...)):

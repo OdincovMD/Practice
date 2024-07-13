@@ -138,34 +138,38 @@ class Register extends React.Component {
 
     async onRegister(registerData) {
 
-        let response = await fetch(`${BACKEND_URL}/register`, {
-            method: "POST",
-            headers: {
-                "Content-type": "application/json;charset=utf-8",
-                "accept": "application/json;charset=utf-8"
-            },
-            body: JSON.stringify(registerData)
-        })
+        try {
+            let response = await fetch(`${BACKEND_URL}/register`, {
+                method: "POST",
+                headers: {
+                    "Content-type": "application/json;charset=utf-8",
+                    "accept": "application/json;charset=utf-8"
+                },
+                body: JSON.stringify(registerData)
+            })
 
-        if (!response.ok) {
-            this.setState({ error: response.status })
-            return
+            if (!response.ok) {
+                this.setState({ error: response.status })
+                return
+            }
+
+            var responseJSON = await response.json()
+            if (!responseJSON.isValid) {
+                this.setState({ error: "Логин уже используется" })
+                return
+            }
+            this.setState({ error: null })
+            this.userData = {
+                name: registerData.firstName,
+                surname: registerData.lastName
+            }
+            this.props.onChange("profile", this.userData)
+        }
+        catch (err) {
+            this.setState({ error: err })
         }
 
-        var responseJSON = await response.json()
-        if (!responseJSON.isValid) {
-            this.setState({ error: "Логин уже используется" })
-            return
-        }
-        this.setState({ error: null })
-        this.userData = {
-            name: registerData.firstName,
-            surname: registerData.lastName
-        }
-        this.props.onChange("profile", this.userData)
     }
-
-
 }
 
 
