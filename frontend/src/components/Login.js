@@ -10,8 +10,6 @@ class Login extends React.Component {
             login: "",
             password: "",
         }
-
-        this.backendData = { isValid: 1 }
     }
 
     render() {
@@ -46,7 +44,6 @@ class Login extends React.Component {
                             password: "",
                             error: null,
                         })
-                        this.backendData = { isValid: 1 }
                         this.onLogin(loginData)
                         loginData = {}
                     }
@@ -54,7 +51,6 @@ class Login extends React.Component {
                     Войти
                 </button>
                 <p>{this.state.error && `Ошибка: ${this.state.error}`}</p>
-                <p>{!this.state.error && !this.backendData.isValid && "Неправильный логин или пароль"}</p>
                 <br /><br />
                 <p>
                     Ещё не зарегестрированы?&nbsp;
@@ -97,10 +93,9 @@ class Login extends React.Component {
             return
         }
         this.setState({ error: null })
-        this.backendData = responseJSON
         userData = {
-            firstName: this.backendData.data.firstName,
-            lastName: this.backendData.data.lastName
+            firstName: responseJSON.data.firstName,
+            lastName: responseJSON.data.lastName
         }
         this.props.onChange("profile", userData)
     }
