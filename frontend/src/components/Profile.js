@@ -9,13 +9,32 @@ class Profile extends React.Component {
       firstName: this.props.userData.firstName,
       lastName: this.props.userData.lastName,
       // status: 'admin',
-      loading: false
+      // loading: false
     }
+
+    this.formData = null;
   }
 
-  handleUploadImage() {
-    // Здесь будет код для загрузки изображения с ПК
-    console.log('Upload image button clicked!');
+  async handleUploadImage() {
+
+    const formData = new FormData();
+    formData.append("file", this.formData);
+
+    let response = await fetch(`${BACKEND_URL}/upload`, {
+      method: 'POST',
+      body: formData
+    })
+
+    if (!response.ok) {
+      alert(`Произошла ошибка: ${response.status}`)
+      return
+    }
+
+    let responseTEXT = await response.text()
+    {
+      alert(`Изображение обработано успешно. Результат: ${responseTEXT}`)
+    }
+
   }
 
   render() {
@@ -30,12 +49,18 @@ class Profile extends React.Component {
             <p>Фамилия: {this.state.lastName}</p>
             {/* <p style={{ marginBottom: 20 }}>Статус: {this.state.status === 'admin' ? 'Администратор' : 'Врач'}</p> */}
             <div style={{ textAlign: 'center' }}>
-              <button style={{ display: 'block', marginBottom: 10 }} onClick={() => { this.props.onChange("editProfile") }}>Изменить данные о пользователе</button>
+              {/* <button style={{ display: 'block', marginBottom: 10 }} onClick={() => { this.props.onChange("editProfile") }}>Изменить данные о пользователе</button> */}
               <button style={{ display: 'block' }} onClick={() => { this.props.onChange("login") }}>Выйти из профиля</button>
             </div>
             <div style={{ textAlign: 'center', marginTop: 20 }}>
               <h2 style={{ marginBottom: 10 }}>Панель управления</h2>
-              <button style={{ display: 'block' }} onClick={() => { this.handleUploadImage() }}>Загрузить изображение с ПК</button>
+              <form ref={(el) => this.myForm = el}>
+                <input type="file" onChange={(event) => { this.formData = event.target.files[0] }} />
+              </form>
+              <button disabled={this.formData} style={{ display: 'block' }} onClick={() => {
+                this.handleUploadImage()
+                this.myForm.reset()
+              }}>Загрузить изображение с ПК</button>
             </div>
           </div>
         </div>

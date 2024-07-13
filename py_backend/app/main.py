@@ -1,4 +1,4 @@
-from fastapi import FastAPI, status, UploadFile
+from fastapi import FastAPI, status, UploadFile, File
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -47,10 +47,9 @@ def handle_register(register: Register):
     main_table.add({"login": register.login, "password": register.password, "firstName": register.firstName, "lastName": register.lastName})
     return JSONResponse(content={"isValid": 1, "data": {"firstName": register.firstName, "lastName": register.lastName}}, status_code=status.HTTP_200_OK)
 
-@app.post("/upload")
-def handle_upload(file: UploadFile):
+@app.post("/upload/")
+async def handle_upload(file: UploadFile = File(...)):
     url = "http://localhost:9000/upload"
-    with open(file, 'rb') as b_file:
-        files = {'file': b_file}
-        response = requests.post(url, files=files)
-        return (response.json())
+    files = {"file": (file.filename, file.file, file.content_type)}
+    response = requests.post(url, files=files)
+    return response.json()
