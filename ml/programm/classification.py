@@ -1,10 +1,14 @@
-import socket
+# import socket
 import torch
 from torchvision import transforms
 import numpy as np
 import os
 from image import convert_to_PIL, adjust_contrast_my, calculate_contrast, NumpyImageDataset
 from model import CustomNeuralNetResNet
+
+from fastapi import FastAPI, UploadFile, File
+from fastapi.responses import JSONResponse
+
 
 os.chdir(os.path.dirname(__file__))
 
@@ -39,23 +43,36 @@ def process_image(image_bytes):
     return f'result: {class_names[predicted_class]}, probability: {round(float(pred[predicted_class]), 2)}'
 
 
-HOST = "localhost"
-PORT = 9000
+# HOST = "localhost"
+# PORT = 9000
 
-while True:
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.bind((HOST, PORT))
-        s.listen()
-        conn, addr = s.accept()
-        with conn:
-            with open('image.jpg', 'wb') as file:
-                while True:
-                    data = conn.recv(2048)
-                    if not data:
-                        break
-                    file.write(data)
+# while True:
+#     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+#         s.bind((HOST, PORT))
+#         s.listen()
+#         conn, addr = s.accept()
+#         with conn:
+#             with open('image.jpg', 'wb') as file:
+#                 while True:
+#                     data = conn.recv(2048)
+#                     if not data:
+#                         break
+#                     file.write(data)
 
-            with open('image.jpg', 'rb') as image_file:
-                image_data = image_file.read()
-                result = process_image(image_data)
-            conn.sendall(result.encode())
+#             with open('image.jpg', 'rb') as image_file:
+#                 image_data = image_file.read()
+#                 result = process_image(image_data)
+#             conn.sendall(result.encode())
+
+
+app = FastAPI()
+
+@app.post("/upload")
+async def upload_image(file: UploadFile = File(...)):
+    image_bytes = await file.read()
+    result = process_image(image_bytes)
+    return JSONResponse(content={"result": result})
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=9000)

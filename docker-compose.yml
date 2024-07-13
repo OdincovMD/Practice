@@ -1,7 +1,7 @@
 version: "2"
 services:
   frontend:
-    build: 
+    build:
       context: ./frontend
     ports:
       - 3000:3000
@@ -10,7 +10,19 @@ services:
     depends_on:
       - backend
   backend:
-    build: 
+    build:
       context: ./backend/pyapp
     ports:
-      - 8000:8000
+      - 8888:8888
+  db:
+    image: postgres
+    restart: always
+    shm_size: 128mb
+    environment:
+      - DB_USERNAME=user
+      - DB_PASSWORD=passwrod
+      - DB_DATABASE=db
+      - DB_HOST=localhost
+      - DB_PORT=5432=value
+    ports:
+      - 5432:5432
