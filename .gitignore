@@ -13,6 +13,7 @@ frontend/build/*
 backend/build/*
 backend/pyapp/*
 backend/src/check_request.cpp
+backend/boost_1_83_0
 
 # misc
 .DS_Store

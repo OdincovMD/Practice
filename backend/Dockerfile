@@ -1,49 +1,27 @@
 FROM debian:12
 
+ENV APP_PATH = /app/
+ENV BOOST_PATH = ${APP_PATH}boost_1_83_0/
+ENV CMAKE_PATH = ${APP_PATH}cmake-3.28.1/bin/
+ENV MICROHTTPD_LIB_PATH = ${APP_PATH}libmicrohttpd
+
+WORKDIR ${APP_PATH}
+
+# all copy
 COPY . .
 
-# preconfiguration
+# preconfiguration environment
 RUN apt-get update && \
-	apt-get install build-essential libssl-dev -y && \
-	apt-get install -y wget
+	apt-get install build-essential libssl-dev -y
 
-RUN apt-get install perl  -y && \
-	apt-get install m4 -y && \
-	apt-get install autoconf -y && \
-	apt-get install automake -y
+# cd to build backend directory
+WORKDIR ${APP_PATH}/build
 
-WORKDIR /app/
-
-RUN wget https://github.com/Kitware/CMake/releases/download/v3.28.1/cmake-3.28.1.tar.gz && \
-	tar -xzf cmake-3.28.1.tar.gz && \
-	rm cmake-3.28.1.tar.gz
-
-# boost
-RUN apt-get install libboost-all-dev -y
-
-WORKDIR /app/cmake-3.28.1
-
-RUN ./bootstrap && \
-	make && \
-	make install
-
-WORKDIR /app/
-
-RUN wget https://gitlab.com/libmicrohttpd/libmicrohttpd/-/archive/master/libmicrohttpd-master.tar.gz && \
-	tar -xzf libmicrohttpd-master.tar.gz && \
-	rm libmicrohttpd-master.tar.gz
-
-# cd libmicrohttpd directory
-WORKDIR /app/libmicrohttpd-master
-
-RUN ./bootstrap && \
-	make && \
-	make install
-
-WORKDIR /app/build
-
-RUN cmake .. && make .
+# build backend project 
+RUN ${CMAKE_PATH}cmake -DCMAKE_PREFIX_PATH="${BOOST_PATH}" -DMICROHTTPD_LIB_PATH=${MICROHTTPD_LIB_PATH} .. && \ 
+	make .
 
 EXPOSE 8888
 
+# run backend
 CMD ["./main"]
