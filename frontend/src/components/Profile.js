@@ -23,9 +23,6 @@ class Profile extends React.Component {
     try {
     let response = await fetch(`${BACKEND_URL}/upload`, {
       method: 'POST',
-      headers: {
-        'Content-type': "multipart/form-data",
-      },
       body: formData
     })
 
@@ -38,6 +35,7 @@ class Profile extends React.Component {
     {
       alert(`Изображение обработано успешно. Результат: ${responseTEXT}`)
     }
+    this.formData = null;
 
   }
   catch (err)  {
