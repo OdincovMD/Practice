@@ -13,7 +13,9 @@ frontend/build/*
 backend/build/*
 backend/pyapp/*
 backend/src/check_request.cpp
-backend/boost_1_83_0
+backend/boost_1_83_0/*
+backend/cmake-3.28.1/*
+backend/libmicrohttpd/*
 
 # misc
 .DS_Store

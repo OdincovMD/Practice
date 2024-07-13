@@ -10,8 +10,6 @@ class Login extends React.Component {
             login: "",
             password: "",
         }
-
-        this.backendData = { isValid: 1 }
     }
 
     render() {
@@ -86,21 +84,22 @@ class Login extends React.Component {
             body: JSON.stringify(loginData)
         })
 
-        if (response.ok) {
-            var responseJSON = await response.json()
-            this.setState({ error: null })
-            this.backendData = responseJSON
-            if (this.backendData.isValid) {
-                userData = {
-                    firstName: this.backendData.data.firstName,
-                    lastName: this.backendData.data.lastName
-                }
-                this.props.onChange("profile", userData)
-            }
-        }
-        else {
+        if (!response.ok) {
             this.setState({ error: response.status })
+            return
         }
+
+        var responseJSON = await response.json()
+        if (!responseJSON.isValid) {
+            this.setState({ error: "Неверный логин или пароль" })
+            return
+        }
+        this.setState({ error: null })
+        userData = {
+            firstName: this.backendData.data.firstName,
+            lastName: this.backendData.data.lastName
+        }
+        this.props.onChange("profile", userData)
     }
 }
 

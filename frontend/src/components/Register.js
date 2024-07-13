@@ -147,19 +147,22 @@ class Register extends React.Component {
             body: JSON.stringify(registerData)
         })
 
-        if (response.ok) {
-            var responseJSON = await response.json()
-            this.setState({ error: null })
-            // Бэк должен возвращать, есть ли пользователь с таким логином в БД, и если нет, то разрешить регистрацию
-            this.userData = {
-                name: registerData.firstName,
-                surname: registerData.lastName
-            }
-            this.props.onChange("profile", this.userData)
-        }
-        else {
+        if (!response.ok) {
             this.setState({ error: response.status })
+            return
         }
+
+        var responseJSON = await response.json()
+        if (!responseJSON.isValid) {
+            this.setState({ error: "Логин уже используется" })
+            return
+        }
+        this.setState({ error: null })
+        this.userData = {
+            name: registerData.firstName,
+            surname: registerData.lastName
+        }
+        this.props.onChange("profile", this.userData)
     }
 
 
