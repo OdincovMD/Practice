@@ -10,6 +10,8 @@ class Login extends React.Component {
             login: "",
             password: "",
         }
+
+        this.backendData = { isValid: 1 }
     }
 
     render() {
@@ -95,6 +97,7 @@ class Login extends React.Component {
             return
         }
         this.setState({ error: null })
+        this.backendData = responseJSON
         userData = {
             firstName: this.backendData.data.firstName,
             lastName: this.backendData.data.lastName

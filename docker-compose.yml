@@ -5,15 +5,18 @@ services:
       context: ./frontend
     ports:
       - 3000:3000
-    expose:
-      - 3000
     depends_on:
       - backend
   backend:
     build:
-      context: ./backend/pyapp
+      context: ./py_backend
     ports:
-      - 8888:8888
+      - 8000:8000
+  ml:
+    build:
+      context: ./ml
+    ports:
+    - 9000:9000
   db:
     image: postgres
     restart: always
