@@ -40,8 +40,7 @@ def process_image(image_bytes):
             preds = model(inputs)
         pred = torch.nn.functional.softmax(preds[0], dim=0).data.cpu().numpy()
     predicted_class = np.argmax(pred)
-
-    return f'result: {class_names[predicted_class]}, probability: {round(float(pred[predicted_class]), 2)}'
+    return {'result': class_names[predicted_class], 'probability': round(float(pred[predicted_class]), 2)}
 
 
 # HOST = "localhost"
@@ -80,7 +79,7 @@ app.add_middleware(
 async def upload_image(file: UploadFile = File(...)):
     image_bytes = await file.read()
     result = process_image(image_bytes)
-    return JSONResponse(content={"result": result})
+    return JSONResponse(content=result)
 
 if __name__ == "__main__":
     import uvicorn

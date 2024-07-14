@@ -14,8 +14,6 @@ class Register(BaseModel):
     firstName: str
     login: str
     password: str
-    rep_passwrod: str
-
 
 app = FastAPI()
 app.add_middleware(
@@ -28,7 +26,8 @@ app.add_middleware(
 
 """Эмулирование работы базы данных"""
 main_table = [{"login": "horo", "password": "123456Qw", "firstName": "Nikolay", "lastName": "Kegelik"},
-              {"login": "base", "password": "123456Qw", "firstName": "John", "lastName": "Doe"}
+              {"login": "base", "password": "123456Qw", "firstName": "John", "lastName": "Doe"},
+              {"login": "a", "password": "a", "firstName": "John", "lastName": "Doe"}
               ]
 
 @app.post("/login")
@@ -43,12 +42,13 @@ def handle_register(register: Register):
     sorted_table = next(filter(lambda x: x["login"] == register.login, main_table), None)
     if sorted_table:
         return JSONResponse(content={"isValid": 0}, status_code=status.HTTP_200_OK)
-    main_table.add({"login": register.login, "password": register.password, "firstName": register.firstName, "lastName": register.lastName})
+    main_table.append({"login": register.login, "password": register.password, "firstName": register.firstName, "lastName": register.lastName})
     return JSONResponse(content={"isValid": 1, "data": {"firstName": register.firstName, "lastName": register.lastName}}, status_code=status.HTTP_200_OK)
 
 @app.post("/upload")
 async def handle_upload(file: UploadFile = File(...)):
-    url = "http://localhost:9000/upload"
+    url = "http://ml:9000/upload"
     files = {"file": (file.filename, file.file, file.content_type)}
     response = requests.post(url, files=files)
     return response.json()
+    # return JSONResponse(content={"result": "Бактериальная пневмония", "probability": 0.96})

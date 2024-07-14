@@ -53,11 +53,12 @@
 }
 
 .register form .info {
-    color: lightcoral;
-    font-size: 14px;
+    color:  #f80000;
+    font-size: 16px;
     margin-top: 10px;
     margin-bottom: 10px;
     animation: fadein 1s;
+    font-weight: 600;
 }
 
 @keyframes fadein {

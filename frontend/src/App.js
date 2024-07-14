@@ -44,7 +44,6 @@ class App extends React.Component {
         else if (this.state.window === "profile")
             return (
                 <div className="profile">
-                    <Header title="Профиль" />
                     <main>
                         <Profile onChange={this.changeState} userData={this.userData} />
                     </main>

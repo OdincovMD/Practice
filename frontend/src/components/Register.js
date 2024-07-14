@@ -99,8 +99,7 @@ class Register extends React.Component {
                             lastName: this.state.lastName,
                             firstName: this.state.firstName,
                             login: this.state.login,
-                            password: this.state.password,
-                            rep_passwrod: this.state.rep_password
+                            password: this.state.password
                         }
                         this.setState({
                             error: null,
@@ -142,8 +141,8 @@ class Register extends React.Component {
             let response = await fetch(`${BACKEND_URL}/register`, {
                 method: "POST",
                 headers: {
-                    "Content-type": "application/json;charset=utf-8",
-                    "accept": "application/json;charset=utf-8"
+                    "Content-type": "application/json",
+                    "accept": "application/json"
                 },
                 body: JSON.stringify(registerData)
             })
@@ -160,8 +159,8 @@ class Register extends React.Component {
             }
             this.setState({ error: null })
             this.userData = {
-                name: registerData.firstName,
-                surname: registerData.lastName
+                firstName: registerData.firstName,
+                lastName: registerData.lastName
             }
             this.props.onChange("profile", this.userData)
         }
