@@ -1,6 +1,6 @@
 FROM tiangolo/uvicorn-gunicorn-fastapi:python3.9
 
-COPY app/main.py /app
+COPY /app /app
 COPY requirements.txt requirements.txt
 EXPOSE 8000
 
