@@ -72,6 +72,10 @@
   transform: scale(1.03);
 }
 
+.profile img {
+  width: 294px;
+  height: 200px;
+}
 
 .profile .infoBad {
   color: #f80000;
@@ -92,4 +96,3 @@
   font-weight: 600;
   white-space: pre-line;
 }
-

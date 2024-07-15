@@ -24,6 +24,10 @@ class Profile extends React.Component {
 
   handleChange(event) {
     this.setState({ formData: event.target.files[0] })
+    let reader = new FileReader();
+    reader.onload = e => document.querySelector('img').src = e.target.result;
+    reader.readAsDataURL(event.target.files[0]);
+    this.setState({ infoBad: this.plug, infoGood: this.plug })
   }
 
   async handleUploadImage() {
@@ -73,12 +77,15 @@ class Profile extends React.Component {
             <form ref={(el) => this.myForm = el}>
               <input type="file" onChange={(event) => { this.handleChange(event) }} />
             </form>
+            {this.state.formData && (<br />)}
+            {this.state.formData && (<img src={this.state.formData} alt="Загруженное изображение" />)}
+            {this.state.formData && (<br />)}
+            <p className='infoBad'>{(this.state.infoBad !== this.plug) ? `Изображение обработано успешно.\n\nРезультат: ${this.state.infoBad.result}\nУверенность: ${(100 * this.state.infoBad.probability).toFixed(0)}%` : ''}</p>
+            <p className='infoGood'>{(this.state.infoGood !== this.plug) ? `Изображение обработано успешно.\n\nРезультат: ${this.state.infoGood.result}\nУверенность: ${(100 * this.state.infoGood.probability).toFixed(0)}%` : ''}</p>
             <button disabled={!this.state.formData} onClick={() => {
               this.handleUploadImage()
               this.myForm.reset()
-            }}>Загрузить изображение с ПК</button>
-            <p className='infoBad'>{(this.state.infoBad !== this.plug) ? `Изображение обработано успешно.\n\nРезультат: ${this.state.infoBad.result}\nУверенность: ${(100 * this.state.infoBad.probability).toFixed(0)}%` : ''}</p>
-            <p className='infoGood'>{(this.state.infoGood !== this.plug) ? `Изображение обработано успешно.\n\nРезультат: ${this.state.infoGood.result}\nУверенность: ${(100 * this.state.infoGood.probability).toFixed(0)}%` : ''}</p>
+            }}>Обработать изображение</button>
             <button style={{ display: 'block' }} className="exit" onClick={() => { this.props.onChange("login") }}>Выйти из профиля</button>
           </div>
         </div>
