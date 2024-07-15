@@ -6,19 +6,15 @@
 
 # testing
 /coverage
-/backend/pyapp/__pycache__/*
-/ml/client.py
-/ml/programm/client.py
 
 # production
 frontend/build/*
-backend/build/*
-backend/pyapp/*
-backend/src/check_request.cpp
-backend/boost_1_83_0/*
-backend/cmake-3.28.1/*
-backend/libmicrohttpd/*
+backend/*
 py_backend/app/__pycache__/*
+ml/app/__pycache__/*
+ml/client.py
+ml/programm/client.py
+
 
 # misc
 .DS_Store
@@ -34,7 +30,3 @@ node_modules
 
 # environment
 /.vscode/*
-
-
-ml/client.py
-ml/programm/client.py
