@@ -1,0 +1,106 @@
+.profile {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #292929;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  font-size: 18px;
+  color: #9a9a9a;
+}
+
+.profile .userdata {
+  color: #fff;
+  width: 600px;
+  margin: 0 auto;
+  position: relative;
+  left: -149px;
+}
+
+.profile .userdata h1 {
+  margin-top: 0;
+  font-weight: bold;
+  color: #333;
+  position: relative;
+  top: -50px;
+  color: #fff;
+}
+
+.profile p {
+  margin-bottom: 10px;
+}
+
+.profile .bottom {
+  margin-bottom: 50px;
+}
+
+.profile .user-data {
+  margin-top: 20px;
+}
+
+.profile .user-data p {
+  margin-bottom: 10px;
+}
+
+.profile .exit { 
+  /* margin-top: 60px; */
+  position: relative;
+  left: 149px;
+}
+
+.profile button {
+  width: 50%;
+  background-color: #131313;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: transform 500ms ease, outline-color 300ms ease-in-out, background-color 300ms linear;
+}
+
+.profile button[disabled] {
+  background-color: rgb(105, 105, 105);
+}
+
+.profile button:hover:not([disabled]) {
+  transform: scale(1.03);
+}
+
+.profile .infoBad {
+  color: #f80000;
+  font-size: 16px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  animation: fadein 1s;
+  font-weight: 600;
+  white-space: pre-line;
+}
+
+.profile .infoGood {
+  color: #ccff00;
+  font-size: 16px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  animation: fadein 1s;
+  font-weight: 600;
+  white-space: pre-line;
+}
+
+.profile #imageMagnifyer {
+  transition: all 0.5s ease-in-out;
+  position: relative;
+  left: -350px;
+  width: 640px;
+  height: 480px;
+}
+
+/* .profile #imageMagnifyer:hover {
+  position: relative;
+  transform: translate(-300px,0)
+} */

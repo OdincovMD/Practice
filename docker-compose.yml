@@ -1,0 +1,40 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - 3000:3000
+    depends_on:
+      - backend
+    volumes:
+      - img:/app/src/components/img
+  backend:
+    build:
+      context: ./py_backend
+    ports:
+      - 8000:8000
+    volumes:
+      - img:/app/img
+  ml:
+    build:
+      context: ./ml
+    ports:
+      - 9000:9000
+  postgres:
+    build:
+      context: ./db
+    restart: always
+    shm_size: 128mb
+    environment:
+      - POSTGRES_USERNAME=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DATABASE=pneumonia
+      - POSTGRES_HOST=localhost
+      - POSTGRES_PORT=5432
+    ports:
+      - 5432:5432
+    volumes:
+      - storage:/var/lib/postgresql/data
+volumes:
+  storage:
+  img:
