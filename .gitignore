@@ -1,5 +1,6 @@
 # dependencies
 /node_modules
+/frontend/build
 /package-lock.json
 /.pnp
 .pnp.js
@@ -14,7 +15,6 @@ py_backend/app/__pycache__/*
 ml/app/__pycache__/*
 ml/client.py
 ml/programm/client.py
-
 
 # misc
 .DS_Store

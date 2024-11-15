@@ -16,57 +16,71 @@ class Login extends React.Component {
         // const regex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$/
         let loginData = {}
         return (
-            <form ref={(el) => this.myForm = el}>
-                <input
-                    className="top"
-                    placeholder="Логин"
-                    onChange={(ans) => { this.setState({ login: ans.target.value }) }}
-                />
-                <input
-                    type="password"
-                    placeholder="Пароль"
-                    onChange={(ans) => { this.setState({ password: ans.target.value }) }}
-                />
-                <br />
-                <button
-                    type="button"
-                    disabled={!(
-                        this.state.password
-                        && this.state.login)}
-                    onClick={() => {
-                        this.myForm.reset()
-                        loginData = {
-                            login: this.state.login,
-                            password: this.state.password
+            <div id="form-container">
+                <form ref={(el) => this.myForm = el}>
+                <div id="form_1">
+                    <input
+                        className="top"
+                        placeholder="Логин"
+                        onChange={(ans) => { this.setState({ login: ans.target.value }) }}
+                    />
+                </div>
+                <div id="form_2">
+                    <input
+                        type="password"
+                        placeholder="Пароль"
+                        onChange={(ans) => { this.setState({ password: ans.target.value }) }}
+                    />
+                </div>
+                <div id="form_3">
+                    <br />
+                    <button
+                        type="button"
+                        disabled={!(
+                            this.state.password
+                            && this.state.login)}
+                        onClick={() => {
+                            this.myForm.reset()
+                            loginData = {
+                                login: this.state.login,
+                                password: this.state.password
+                            }
+                            this.setState({
+                                login: "",
+                                password: "",
+                                error: null,
+                            })
+                            this.onLogin(loginData)
+                            loginData = {}
                         }
-                        this.setState({
-                            login: "",
-                            password: "",
-                            error: null,
-                        })
-                        this.onLogin(loginData)
-                        loginData = {}
-                    }
-                    }>
-                    Войти
-                </button>
-                <p>{this.state.error && `Ошибка: ${this.state.error}`}</p>
-                <br /><br />
-                <p>
-                    Ещё не зарегестрированы?&nbsp;
-                </p>
-                <button
-                    className="link"
-                    type="link"
-                    onClick={() => {
-                        this.myForm.reset()
-                        this.setState({ login: "", password: "" })
-                        this.props.onChange("register")
-                    }
-                    }>
-                    Регистрация
-                </button>
-            </form>
+                        }>
+                        Войти
+                    </button>
+                </div>
+                <div id="form_4">
+                    <p>
+                        {this.state.error && `Ошибка: ${this.state.error}`}
+                    </p>
+                    <br /><br />
+                    <p>
+                        Еще не зарегестрированы?&nbsp;
+                    </p>
+                </div>
+                <div id="form_5">
+                    <button
+                        className="link"
+                        type="link"
+                        onClick={() => {
+                            this.myForm.reset()
+                            this.setState({ login: "", password: "" })
+                            this.props.onChange("register")
+                        }
+                        }>
+                        Регистрация
+                    </button>
+                </div>
+                </form>
+            </div>
         )
     }
 

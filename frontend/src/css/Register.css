@@ -1,81 +1,65 @@
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;1,300&display=swap");
-
 .register {
+    height: 95vh;
+    width: 65vw;
+
+    padding: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 110vh;
+
+    backdrop-filter: blur(10px);
+    background-color: rgba(197, 198, 199, 0.2);
+
+    overflow: overlay;
+}
+
+.register #form-container {
+    width: 100%;
+    display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-.register header {
-    position: relative;
-    left: -14px;
-    font-size: 50px;
-    font-weight: 600;
-    margin-top: 40px;
+.register form {
+    width: 60%;
 }
 
-.register form input,
+.register form div {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 .register form button {
-    translate: 5px;
-    position: relative;
-    left: 8px;
-    width: 90%;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 400;
     padding: 15px 5%;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 300;
+    font-size: 20px;
+    width: 90%;
     margin-bottom: 10px;
     border: 0;
-    background: #222;
-    color: #fff;
-    outline: none;
-    outline-color: #222;
+    background: #1F2833CC;
+    color: white;
+}
+
+.register form input {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 400;
+    padding: 15px 5%;
     font-size: 20px;
-    box-sizing: border-box;
-    transition: transform 500ms ease, outline-color 300ms ease-in-out, background-color 300ms linear;
-    ;
-}
-
-.register form button:hover:not([disabled]) {
-    transform: scale(1.03);
-}
-
-.register form button[disabled] {
-    background-color: rgb(105, 105, 105);
-}
-
-.register form input:focus,
-.register form button:focus {
-    outline-color: rgb(72, 203, 255);
-    outline-style: solid;
-    outline-width: 1px;
-}
-
-.register form .info {
-    color:  #f80000;
-    font-size: 16px;
-    margin-top: 10px;
+    width: 90%;
     margin-bottom: 10px;
-    animation: fadein 1s;
-    font-weight: 600;
-}
-
-@keyframes fadein {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
+    background: #1F2833CC;
+    color: white;
+    box-sizing: border-box;
 }
 
 .register form p {
-    position: relative;
-    left: 14px;
-}
-
-.register form .top {
-    margin-top: 5px;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 400;
+    font-size: 20px;
+    color: white;
 }

@@ -1,0 +1,8 @@
+header {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 300;
+    font-size: 60px;
+    -webkit-text-stroke-color: black;
+    -webkit-text-stroke-width: 2px;
+    color: white;
+}

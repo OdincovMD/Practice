@@ -21,33 +21,20 @@ class App extends React.Component {
         if (this.state.window === "login")
             return (
                 <div className="login">
-
-                    <Header title="Форма входа" />
-                    <main>
-                        <Login onChange={this.changeState} />
-                    </main>
-
+                    <Login onChange={this.changeState} />
                 </div>
             )
 
         else if (this.state.window === "register")
             return (
                 <div className="register">
-
-                    <Header title="Форма регистрации" />
-                    <main>
-                        <Register onChange={this.changeState} />
-                    </main>
-
+                    <Register onChange={this.changeState} />
                 </div>)
 
         else if (this.state.window === "profile")
             return (
                 <div className="profile">
-                    <main>
-                        <Profile onChange={this.changeState} userData={this.userData} />
-                    </main>
-
+                    <Profile onChange={this.changeState} userData={this.userData} />
                 </div>
             )
     }

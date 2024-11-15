@@ -8,18 +8,30 @@ services:
       - backend
     volumes:
       - img:/app/src/components/img
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend
+          target: /app
+          ignore:
+            - node_modules/
   backend:
     build:
-      context: ./py_backend
+      context: ./backend
     ports:
       - 8000:8000
     volumes:
       - img:/app/img
-  ml:
-    build:
-      context: ./ml
-    ports:
-      - 9000:9000
+    develop:
+      watch:
+        - action: sync
+          path: ./backend
+          target: /app
+  # ml:
+  #   build:
+  #     context: ./ml
+  #   ports:
+  #     - 9000:9000
   postgres:
     build:
       context: ./db
