@@ -10,8 +10,7 @@
 
 # production
 frontend/build/*
-backend/*
-py_backend/app/__pycache__/*
+backend/app/__pycache__/*
 ml/app/__pycache__/*
 ml/client.py
 ml/programm/client.py
