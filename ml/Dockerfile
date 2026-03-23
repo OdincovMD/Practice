@@ -1,16 +1,17 @@
-FROM pytorch/pytorch
+# CPU-only PyTorch (~650 MB), без скачивания wheel'ов с download-r2.pytorch.org
+FROM inom/pytorch-cpu:python3.12.4-pytorch2.3.1-slim
 
-RUN apt-get update && apt-get install libgl1 -y
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
 
-COPY ./programm/ ./programm/
-COPY requirements.txt requirements.txt
-RUN pip3 install -r requirements.txt
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-RUN pip install uvicorn
-ENV PATH=$PATH:/usr/local/bin
-
-RUN pip install python-multipart
+COPY programm/ ./programm/
+WORKDIR /app/programm
 
 EXPOSE 9000
-WORKDIR ./programm
-CMD ["uvicorn", "classification:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "9000"]
+CMD ["uvicorn", "classification:app", "--host", "0.0.0.0", "--port", "9000", "--proxy-headers"]

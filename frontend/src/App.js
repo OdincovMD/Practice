@@ -1,65 +1,51 @@
 import React from "react"
-import Header from "./components/Header"
+import AppShell from "./components/AppShell"
 import Login from "./components/Login"
 import Register from "./components/Register"
 import Profile from "./components/Profile"
 
 class App extends React.Component {
-
-    constructor(props) {
-        super(props)
-
-        this.state = {
-            window: "login",
-        }
-
-        this.changeState = this.changeState.bind(this)
-        this.userData = {}
+  constructor(props) {
+    super(props)
+    this.state = {
+      window: "login",
+      audience: "patient",
     }
+    this.changeState = this.changeState.bind(this)
+    this.setAudience = this.setAudience.bind(this)
+    this.userData = {}
+  }
 
-    render() {
-        if (this.state.window === "login")
-            return (
-                <div className="login">
+  setAudience(audience) {
+    this.setState({ audience })
+  }
 
-                    <Header title="Форма входа" />
-                    <main>
-                        <Login onChange={this.changeState} />
-                    </main>
+  render() {
+    const { window: view, audience } = this.state
+    return (
+      <AppShell audience={audience} onAudienceChange={this.setAudience}>
+        {view === "login" && (
+          <Login onChange={this.changeState} audience={audience} />
+        )}
+        {view === "register" && (
+          <Register onChange={this.changeState} audience={audience} />
+        )}
+        {view === "profile" && (
+          <Profile
+            onChange={this.changeState}
+            userData={this.userData}
+            audience={audience}
+          />
+        )}
+      </AppShell>
+    )
+  }
 
-                </div>
-            )
-
-        else if (this.state.window === "register")
-            return (
-                <div className="register">
-
-                    <Header title="Форма регистрации" />
-                    <main>
-                        <Register onChange={this.changeState} />
-                    </main>
-
-                </div>)
-
-        else if (this.state.window === "profile")
-            return (
-                <div className="profile">
-                    <main>
-                        <Profile onChange={this.changeState} userData={this.userData} />
-                    </main>
-
-                </div>
-            )
-    }
-
-    changeState(state, additionalData = null) {
-        this.setState({ window: state })
-        console.log(additionalData)
-        if (additionalData)
-            this.userData = additionalData
-        else
-            this.userData = {}
-    }
+  changeState(next, additionalData = null) {
+    this.setState({ window: next })
+    if (additionalData) this.userData = additionalData
+    else this.userData = {}
+  }
 }
 
 export default App

@@ -1,49 +1,188 @@
-# Practice Repository
+# Скрининг пневмонии по рентгеновским снимкам
 
-This repository presents a system for the early diagnosis of pneumonia based on chest X-ray images. The system provides a graphical interface that allows you to predict the presence of pneumonia based on image analysis performed by a trained neural network.
+Система вспомогательной диагностики пневмонии на основе анализа рентгенограмм грудной клетки. Классифицирует снимок на три класса: бактериальная пневмония, вирусная пневмония, отсутствие пневмонии. Результаты носят ориентировочный характер и не заменяют врачебный осмотр.
 
-This system can be used on any operating system where Docker is installed.
+## Оглавление
 
-## Contents
+- [Возможности](#возможности)
+- [Архитектура](#архитектура)
+- [Технологический стек](#технологический-стек)
+- [Требования](#требования)
+- [Установка и запуск](#установка-и-запуск)
+- [Конфигурация](#конфигурация)
+- [Структура проекта](#структура-проекта)
+- [Разработка](#разработка)
+- [Участие в разработке](#участие-в-разработке)
+- [Благодарности](#благодарности)
+- [Лицензия](#лицензия)
 
-- **backend**: Contains backend code in С++.
-- **db**: Database related files and scripts.
-- **frontend**: Frontend code and resources.
-- **ml**: Machine learning models and notebooks.
-- **py_backend**: Additional backend code in Python.
-- **docker-compose.yml**: Docker Compose file for container orchestration.
+## Возможности
 
-## Prerequisites
+- Регистрация и вход в личный кабинет
+- Загрузка рентгеновского снимка (JPG, PNG и др.)
+- Анализ нейросетью на три класса: бактериальная пневмония, вирусная пневмония, отсутствие пневмонии
+- Отображение результата и оценки уверенности модели
+- Два режима интерфейса: для пациентов и для специалистов
+- Единая точка входа через nginx, все сервисы скрыты внутри Docker-сети
+
+## Архитектура
+
+```
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│   Браузер   │────▶│   nginx     │────▶│   backend   │
+│  localhost  │     │  порт 90    │     │  FastAPI    │
+└─────────────┘     └─────────────┘     └──────┬──────┘
+                                    ┌────────┼────────┐
+                                    ▼                 ▼
+                            ┌───────────────┐ ┌───────────────┐
+                            │  PostgreSQL   │ │   ML-сервис   │
+                            │   postgres    │ │ PyTorch ResNet│
+                            └───────────────┘ └───────────────┘
+```
+
+- **nginx** — единственный сервис, доступный с хоста (порт 90). Раздаёт статику React и проксирует `/api/*` на backend.
+- **backend** — FastAPI: авторизация, регистрация, проксирование загрузки снимков в ML.
+- **ml** — FastAPI + PyTorch (ResNet50): предобработка изображения и классификация.
+- **postgres** — база данных пользователей.
+
+Проверки работоспособности (healthcheck) настроены для backend, ml и postgres; nginx запускается после того, как backend станет здоровым.
+
+## Технологический стек
+
+| Компонент | Технологии |
+|-----------|------------|
+| Frontend | React 18, Create React App |
+| Backend | FastAPI, SQLAlchemy 2, Pydantic 2 |
+| ML | PyTorch, torchvision (ResNet50), OpenCV, Pillow |
+| БД | PostgreSQL 16 |
+| Инфраструктура | Docker Compose, nginx |
+
+## Требования
 
 - Docker
 - Docker Compose
 
-## Setup
+## Установка и запуск
 
-1. Clone the repository:
-```sh
-git clone https://github.com/OdincovMD/Practice.git
-cd Practice
+1. Клонируйте репозиторий:
+   ```sh
+   git clone https://github.com/OdincovMD/Practice.git
+   cd Practice
+   ```
+
+2. При необходимости настройте параметры:
+   ```sh
+   cp .env.example .env
+   # Отредактируйте .env (порт nginx, PostgreSQL, healthcheck и т.п.)
+   ```
+
+3. Соберите и запустите контейнеры:
+   ```sh
+   docker compose up --build
+   ```
+
+4. Откройте приложение в браузере:
+   ```
+   http://localhost:90
+   ```
+   Порт по умолчанию — 90. Изменить можно через переменную `NGINX_HOST_PORT` в `.env`.
+
+5. Остановка:
+   ```sh
+   docker compose down
+   ```
+
+## Конфигурация
+
+Переменные окружения (файл `.env`):
+
+| Переменная | Описание | По умолчанию |
+|------------|----------|--------------|
+| `NGINX_HOST_PORT` | Порт nginx на хосте | `90` |
+| `POSTGRES_USER` | Пользователь PostgreSQL | `postgres` |
+| `POSTGRES_PASSWORD` | Пароль PostgreSQL | `postgres` |
+| `POSTGRES_DB` | Имя базы данных | `pneumonia` |
+| `DATABASE_URL` | Полный DSN (при задании перекрывает POSTGRES_*) | — |
+| `ML_UPLOAD_URL` | URL ML-сервиса для backend | `http://ml:9000/upload` |
+| `HEALTHCHECK_INTERVAL` | Интервал healthcheck (сек.) | `15` / `20` |
+| `HEALTHCHECK_TIMEOUT` | Таймаут healthcheck (сек.) | `5` |
+| `HEALTHCHECK_RETRIES` | Количество попыток | `5` |
+| `ML_START_PERIOD` | Пауза перед проверкой ML (сек.) | `120` |
+
+## Структура проекта
+
 ```
-2. Build and run the Docker containers:
-```sh
-docker-compose up --build
-```
-3. The application will be available at http://localhost:3000.
-4. To stop and remove containers, use the command:
-```sh
-docker-compose down
+Practice/
+├── frontend/          # React-приложение
+│   ├── src/
+│   │   ├── components/
+│   │   ├── css/
+│   │   └── ...
+│   └── package.json
+├── backend/           # FastAPI (авторизация, прокси ML)
+│   └── app/
+│       ├── routers/
+│       ├── services/
+│       ├── models.py
+│       └── ...
+├── ml/                # ML-сервис (PyTorch)
+│   └── programm/
+│       ├── classification.py
+│       ├── model.py
+│       ├── image.py
+│       └── best_model.pth   # веса модели (добавить вручную)
+├── nginx/             # Конфигурация nginx
+├── docker-compose.yml
+├── .env.example
+└── README.md
 ```
 
-## Usage
+> **Важно:** Файл `best_model.pth` с весами обученной модели должен находиться в `ml/programm/`. Он не включён в репозиторий.
+
+## Разработка
+
+### Frontend (локально)
+
+```sh
+cd frontend
+npm install
+npm start
+```
+
+Приложение будет доступно на `http://localhost:3000`. Запросы к API проксируются на `http://localhost:8000` (см. `proxy` в `package.json`).
+
 ### Backend
-+ The backend services are located in the backend and py_backend directories.
-### Database
-+ Database setup and configurations are in the db directory.
-### Frontend
-+ The frontend application is located in the frontend directory.
-### Machine Learning
-+ Machine learning models, weights and train Jupyter notebook are in the ml directory.
 
-## Contributing
-Contributions are welcome! Please open an issue or submit a pull request.
+```sh
+cd backend
+pip install -r requirements.txt
+# Укажите DATABASE_URL (например, на локальный PostgreSQL)
+cd app && uvicorn main:app --reload --port 8000
+```
+
+### ML (локально)
+
+```sh
+cd ml
+pip install -r requirements.txt
+cd programm && uvicorn classification:app --reload --port 9000
+```
+
+## Благодарности
+
+Спасибо всем, кто участвовал в разработке:
+
+- **Kegelik Nikolay** — основная часть разработки
+- **Xxproner** — доработки и улучшения
+- **OdincovMD** — инициация проекта и архитектура
+- **Horokami** — вклад в развитие репозитория
+
+Проект использует открытые технологии и библиотеки: PyTorch, FastAPI, React, PostgreSQL и другие.
+
+## Участие в разработке
+
+Приветствуются pull request и issues. Обсуждение идей — через раздел Issues на GitHub.
+
+## Лицензия
+
+Распространяется под лицензией MIT. Подробности см. в файле [LICENSE](LICENSE).

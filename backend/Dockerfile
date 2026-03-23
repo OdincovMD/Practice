@@ -1,25 +1,9 @@
-FROM debian:12
+FROM tiangolo/uvicorn-gunicorn-fastapi:python3.9
 
-WORKDIR /app/
+COPY requirements.txt .
+RUN pip3 install -r requirements.txt
 
-# all copy
-COPY . .
+COPY app/ /app/
+EXPOSE 8000
 
-# preconfiguration environment
-RUN apt-get update && \
-  apt-get install build-essential -y && \
-  apt-get install libssl1.1 -y 
-
-# cd to build backend directory
-WORKDIR /app/build
-
-# build backend project 
-RUN LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/
-
-RUN cmake -DCMAKE_PREFIX_PATH="/app/boost_1_83_0/" -DMICROHTTPD_LIB_PATH=/app/libmicrohttpd .. && \ 
-  make .
-
-EXPOSE 8888
-
-# run backend
-CMD ["./main"]
+CMD ["uvicorn", "main:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "8000"]
