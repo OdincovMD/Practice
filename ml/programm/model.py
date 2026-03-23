@@ -1,11 +1,12 @@
 import torch
 from torchvision import models
+from torchvision.models import ResNet50_Weights
 
 
 class CustomNeuralNetResNet(torch.nn.Module):
-    def __init__(self,outputs_number):
-        super(CustomNeuralNetResNet, self).__init__()
-        self.net = models.resnet50(pretrained=True)
+    def __init__(self, outputs_number):
+        super().__init__()
+        self.net = models.resnet50(weights=ResNet50_Weights.DEFAULT)
         
         for param in self.net.parameters():
             param.requires_grad = False

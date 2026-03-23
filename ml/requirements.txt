@@ -1,3 +1,7 @@
+# torch и torchvision уже в базовом образе pytorch/pytorch
+numpy
 Pillow
 opencv-python-headless
 fastapi
+uvicorn[standard]
+python-multipart

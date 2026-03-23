@@ -1,96 +1,232 @@
-import React from 'react'
+import React from "react"
 import BACKEND_URL from "../config"
 
-class Profile extends React.Component {
+const emptyResult = { result: "", probability: "" }
 
+export default class Profile extends React.Component {
   constructor(props) {
     super(props)
-    this.plug = { "result": "", "probability": "" }
-
+    this.fileInputRef = React.createRef()
     this.state = {
-      firstName: this.props.userData.firstName,
-      lastName: this.props.userData.lastName,
+      firstName: props.userData.firstName,
+      lastName: props.userData.lastName,
       formData: null,
-      infoBad: this.plug,
-      infoGood: this.plug,
-      // status: 'admin',
-      // loading: false
-
+      previewUrl: null,
+      infoBad: emptyResult,
+      infoGood: emptyResult,
+      uploadError: null,
+      uploading: false,
     }
-
     this.handleChange = this.handleChange.bind(this)
     this.handleUploadImage = this.handleUploadImage.bind(this)
   }
 
   handleChange(event) {
-    this.setState({ formData: event.target.files[0] })
-    let reader = new FileReader();
-    reader.onload = e => document.querySelector('img').src = e.target.result;
-    reader.readAsDataURL(event.target.files[0]);
-    this.setState({ infoBad: this.plug, infoGood: this.plug })
+    const file = event.target.files && event.target.files[0]
+    if (!file) {
+      this.setState({
+        formData: null,
+        previewUrl: null,
+        infoBad: emptyResult,
+        infoGood: emptyResult,
+        uploadError: null,
+      })
+      return
+    }
+    if (this.state.previewUrl) {
+      URL.revokeObjectURL(this.state.previewUrl)
+    }
+    const previewUrl = URL.createObjectURL(file)
+    this.setState({
+      formData: file,
+      previewUrl,
+      infoBad: emptyResult,
+      infoGood: emptyResult,
+      uploadError: null,
+    })
+  }
+
+  componentWillUnmount() {
+    if (this.state.previewUrl) URL.revokeObjectURL(this.state.previewUrl)
   }
 
   async handleUploadImage() {
+    if (!this.state.formData) return
+    const formData = new FormData()
+    formData.append("file", this.state.formData)
+    const pneumoniaRe = /^.* пневмония$/i
 
-    let regex = /^.* пневмония$/
-    const formData = new FormData();
-    formData.append("file", this.state.formData);
+    this.setState({ uploading: true, uploadError: null })
 
     try {
-      let response = await fetch(`${BACKEND_URL}/upload`, {
-        method: 'POST',
-        body: formData
+      const response = await fetch(`${BACKEND_URL}/upload`, {
+        method: "POST",
+        body: formData,
       })
 
       if (!response.ok) {
-        alert(`Произошла ошибка: ${response.status}`)
+        let message = `Ошибка ${response.status}`
+        try {
+          const data = await response.json()
+          if (data.detail) {
+            message =
+              typeof data.detail === "string"
+                ? data.detail
+                : JSON.stringify(data.detail)
+          }
+        } catch (_) {
+          /* ignore */
+        }
+        this.setState({ uploadError: message, uploading: false })
         return
       }
 
-      let responseJSON = await response.json()
-      console.log(responseJSON.result)
-      if (regex.test(responseJSON.result))
-        this.setState({ infoBad: responseJSON, infoGood: this.plug })
-      else
-        this.setState({ infoBad: this.plug, infoGood: responseJSON })
-    }
-    catch (err) {
-      alert(`Ошибка: ${err}`)
+      const responseJSON = await response.json()
+      if (pneumoniaRe.test(responseJSON.result)) {
+        this.setState({
+          infoBad: responseJSON,
+          infoGood: emptyResult,
+          uploading: false,
+        })
+      } else {
+        this.setState({
+          infoBad: emptyResult,
+          infoGood: responseJSON,
+          uploading: false,
+        })
+      }
+
+      if (this.fileInputRef.current) this.fileInputRef.current.value = ""
+      if (this.state.previewUrl) URL.revokeObjectURL(this.state.previewUrl)
+      this.setState({ formData: null, previewUrl: null })
+    } catch (err) {
+      this.setState({
+        uploadError: "Не удалось выполнить запрос. Проверьте сеть и повторите попытку.",
+        uploading: false,
+      })
     }
   }
 
   render() {
-    if (this.state.loading)
-      return (<p> Loading...</p>)
-    else
-      return (
-        <div className="userdata">
-          <h1> Страница пользователя</h1>
-          <p>Имя: {this.state.firstName}</p>
-          <p className="bottom">Фамилия: {this.state.lastName}</p>
-          {/* <p style={{ marginBottom: 20 }}>Статус: {this.state.status === 'admin' ? 'Администратор' : 'Врач'}</p> */}
-          <div style={{ textAlign: 'center' }}>
-            {/* <button style={{ display: 'block', marginBottom: 10 }} onClick={() => { this.props.onChange("editProfile") }}>Изменить данные о пользователе</button> */}
-          </div>
-          <div style={{ textAlign: 'center', marginTop: 20 }}>
-            <h2 style={{ marginBottom: 10 }}>Панель управления</h2>
-            <form ref={(el) => this.myForm = el}>
-              <input type="file" onChange={(event) => { this.handleChange(event) }} />
-            </form>
-            {this.state.formData && (<br />)}
-            {this.state.formData && (<img src={this.state.formData} alt="Загруженное изображение" />)}
-            {this.state.formData && (<br />)}
-            <p className='infoBad'>{(this.state.infoBad !== this.plug) ? `Изображение обработано успешно.\n\nРезультат: ${this.state.infoBad.result}\nУверенность: ${(100 * this.state.infoBad.probability).toFixed(0)}%` : ''}</p>
-            <p className='infoGood'>{(this.state.infoGood !== this.plug) ? `Изображение обработано успешно.\n\nРезультат: ${this.state.infoGood.result}\nУверенность: ${(100 * this.state.infoGood.probability).toFixed(0)}%` : ''}</p>
-            <button disabled={!this.state.formData} onClick={() => {
-              this.handleUploadImage()
-              this.myForm.reset()
-            }}>Обработать изображение</button>
-            <button style={{ display: 'block' }} className="exit" onClick={() => { this.props.onChange("login") }}>Выйти из профиля</button>
-          </div>
-        </div>
-      )
-  };
-}
+    const { audience, onChange } = this.props
+    const { infoBad, infoGood, uploadError, uploading } = this.state
+    const hasBad = infoBad && infoBad.result !== ""
+    const hasGood = infoGood && infoGood.result !== ""
 
-export default Profile
+    return (
+      <div className="profile-layout">
+        <section className="profile-card" aria-labelledby="profile-user-heading">
+          <div className="profile-badges">
+            <span className="badge">
+              {audience === "clinical"
+                ? "Личный кабинет · режим специалиста"
+                : "Личный кабинет · режим пациента"}
+            </span>
+          </div>
+          <h1 id="profile-user-heading">
+            {this.state.firstName} {this.state.lastName}
+          </h1>
+          <dl className="profile-meta">
+            <div>
+              <dt>Имя</dt>
+              <dd>{this.state.firstName}</dd>
+            </div>
+            <div>
+              <dt>Фамилия</dt>
+              <dd>{this.state.lastName}</dd>
+            </div>
+          </dl>
+          <button
+            type="button"
+            className="btn btn--danger-outline"
+            onClick={() => onChange("login")}
+          >
+            Выйти
+          </button>
+        </section>
+
+        <section className="profile-card" aria-labelledby="upload-heading">
+          <h2 id="upload-heading">Анализ рентген-снимка грудной клетки</h2>
+          <div className="profile-upload-lead">
+            <p className="field-hint patient-hint">
+              Выберите файл (JPG, PNG и т.п.). После обработки вы увидите класс и оценку уверенности
+              модели — это ориентир, а не диагноз.
+            </p>
+            <p className="field-hint clinical-only">
+              Загрузка DICOM не поддерживается в этой демо-версии; используйте растровый снимок.
+              Результат — выход классификатора (вероятности по softmax).
+            </p>
+          </div>
+
+          <div className="upload-zone">
+            <label htmlFor="xray-file" className="sr-only">
+              Файл снимка
+            </label>
+            <input
+              id="xray-file"
+              ref={this.fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={this.handleChange}
+              disabled={uploading}
+            />
+          </div>
+
+          <div className="preview-wrap" aria-live="polite">
+            {this.state.previewUrl ? (
+              <img
+                src={this.state.previewUrl}
+                alt="Предпросмотр выбранного снимка"
+              />
+            ) : (
+              <span className="preview-placeholder">
+                Предпросмотр появится после выбора файла
+              </span>
+            )}
+          </div>
+
+          {uploadError && (
+            <div className="alert alert--error" role="alert">
+              {uploadError}
+            </div>
+          )}
+
+          <div className="stack-gap" style={{ marginTop: "1rem" }}>
+            <button
+              type="button"
+              className="btn btn--primary"
+              disabled={!this.state.formData || uploading}
+              onClick={this.handleUploadImage}
+            >
+              {uploading ? "Обработка…" : "Запустить анализ"}
+            </button>
+          </div>
+
+          {hasBad && (
+            <div className="result-panel result-panel--caution" role="status">
+              <div className="result-panel__label">Внимание — требуется врачебная оценка</div>
+              <div className="result-panel__value">{infoBad.result}</div>
+              <div className="result-prob">
+                Уверенность модели: {(100 * Number(infoBad.probability)).toFixed(0)}%
+              </div>
+              <p className="field-hint" style={{ marginTop: "0.75rem" }}>
+                Наличие признаков, указывающих на пневмонию по мнению модели, не означает
+                окончательный диагноз. Обратитесь к врачу.
+              </p>
+            </div>
+          )}
+
+          {hasGood && (
+            <div className="result-panel result-panel--ok" role="status">
+              <div className="result-panel__label">Результат модели</div>
+              <div className="result-panel__value">{infoGood.result}</div>
+              <div className="result-prob">
+                Уверенность модели: {(100 * Number(infoGood.probability)).toFixed(0)}%
+              </div>
+            </div>
+          )}
+        </section>
+      </div>
+    )
+  }
+}

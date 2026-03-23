@@ -1,0 +1,48 @@
+/* Медицинский интерфейс: спокойные холодные тона, высокий контраст текста */
+
+:root {
+  --font-display: "Literata", "Georgia", serif;
+  --font-ui: "Manrope", system-ui, sans-serif;
+
+  --color-bg: #f0f4f8;
+  --color-bg-elevated: #ffffff;
+  --color-surface-muted: #e8eef4;
+  --color-border: #c5d4e0;
+  --color-border-strong: #8fa8bc;
+
+  --color-text: #142433;
+  --color-text-muted: #4a5d6e;
+  --color-text-subtle: #6b7c8c;
+
+  --color-primary: #0f5f6d;
+  --color-primary-hover: #0c4d58;
+  --color-primary-soft: #e0f3f6;
+
+  --color-success: #166534;
+  --color-success-bg: #ecfdf3;
+  --color-warning: #9a3412;
+  --color-warning-bg: #fff7ed;
+  --color-danger: #9f1239;
+  --color-danger-bg: #fff1f2;
+
+  --shadow-sm: 0 1px 2px rgba(20, 36, 51, 0.06);
+  --shadow-md: 0 8px 30px rgba(20, 36, 51, 0.08);
+  --shadow-lg: 0 20px 50px rgba(20, 36, 51, 0.12);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+
+  --space-unit: 8px;
+  --content-max: 1120px;
+  --focus-ring: 0 0 0 3px rgba(15, 95, 109, 0.35);
+}
+
+/*
+ * Режим специалиста: только визуальные отличия без смены масштаба (rem),
+ * чтобы переключение «Пациент / Специалист» не прыгало по размеру.
+ */
+html.audience-clinical {
+  --radius-md: 10px;
+  --radius-lg: 12px;
+}

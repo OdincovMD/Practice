@@ -75,6 +75,11 @@ app.add_middleware(
 )
 
 
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+
 @app.post("/upload")
 async def upload_image(file: UploadFile = File(...)):
     image_bytes = await file.read()
